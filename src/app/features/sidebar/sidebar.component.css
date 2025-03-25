@@ -1,0 +1,26 @@
+.sidebar {
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    width: 250px;
+    background: #fffdfd;
+    color: #161616;
+    padding: 10px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+   
+  .nav-link {
+    border-radius: 5px;
+    transition: all 0.2s;
+  }
+   
+  .nav-link:hover {
+    background: rgba(255, 255, 255, 0.692);
+  }
+   
+  .nav-link.active {
+    background: rgba(255, 255, 255, 0.692);
+  }
