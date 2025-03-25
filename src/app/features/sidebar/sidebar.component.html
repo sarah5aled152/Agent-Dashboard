@@ -1,0 +1,43 @@
+<!-- sidebar.component.html -->
+<div class="sidebar">
+  <div class="d-flex align-items-center p-3">
+    <img src="assets/images/customer-service.png" width="35" height="35" alt="Customer Service">
+  </div>
+  <ul class="nav flex-column">
+    <li class="nav-item mb-2 text-black d-flex align-items-center">
+      <a class="nav-link" routerLink="/users" routerLinkActive="active">
+        <i class="bi bi-people-fill me-2"></i>
+        Users
+      </a>
+    </li>
+    <li class="nav-item mb-2 text-black d-flex align-items-center">
+      <a class="nav-link " routerLink="/inbox" routerLinkActive="active">
+        <i class="bi bi-inbox-fill me-2 "></i>
+        Inbox
+      </a>
+    </li>
+    <li class="nav-item mb-2 text-black d-flex align-items-center">
+      <a class="nav-link " routerLink="/ticket" routerLinkActive="active">
+        <i class="bi bi-ticket-detailed-fill"></i>
+        Tickets
+      </a>
+    </li>
+    <!-- Add more navigation items here -->
+  </ul>
+  
+  <div class="status-toggle p-3 border-bottom">
+    <div class="d-flex justify-content-between align-items-center">
+      <span>Status</span>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="statusToggle" 
+               [checked]="agentStatus === 'online'" (change)="toggleStatus()">
+        <label class="form-check-label ms-2" for="statusToggle">
+          <span [ngClass]="agentStatus === 'online' ? 'text-success' : 'text-danger'">
+            {{ agentStatus | titlecase }}
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+</div>
