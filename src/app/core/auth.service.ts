@@ -9,7 +9,7 @@ import { jwtDecode } from 'jwt-decode';
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = 'https://customer-support-rose.vercel.app/';
+  private baseUrl = 'https://e-commerce-api-tau-five.vercel.app/';
   private tokenSubject = new BehaviorSubject<string | null>(null);
 
   token$ = this.tokenSubject.asObservable();

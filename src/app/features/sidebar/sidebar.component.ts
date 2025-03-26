@@ -9,15 +9,22 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
 })
-export class SidebarComponent implements OnInit {
-  agentStatus: string = 'offline';
+export class SidebarComponent {
+  showAgentStatusDropdown = false;
+  agentStatus: 'online' | 'offline' = 'online';
   
   constructor() { }
   
   ngOnInit(): void {
   }
   
-  toggleStatus() {
-    this.agentStatus = this.agentStatus === 'online' ? 'offline' : 'online';
+  handleChangeAgentStatus(status: 'online' | 'offline') {
+    const confirmed = confirm('Change your status to ' + status + '?');
+    if (confirmed) {
+      this.agentStatus = status;
+      this.showAgentStatusDropdown = false;
+    }
   }
+
+
 }
