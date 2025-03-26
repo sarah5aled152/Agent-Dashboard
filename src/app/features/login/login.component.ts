@@ -52,7 +52,9 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value;
     this.authService.login(email, password).subscribe({
       next: (response) => {
-        this.authService.saveUser(response.token);
+        console.log(response);
+        
+        this.authService.saveUser(response.data.token);
         this.router.navigate(['/home']);
         this.loading = false;
       },

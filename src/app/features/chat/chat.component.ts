@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { NgClass, TitleCasePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -9,13 +9,25 @@ export interface messageType {
   time: Date;
 }
 
+interface ChatStatusOption {
+  value: 'open' | 'pending' | 'closed';
+  label: string;
+  colorClass: string;
+}
+
 @Component({
   selector: 'app-chat',
-  imports: [FormsModule, NgClass],
+  standalone: true,
+  imports: [FormsModule, NgClass, TitleCasePipe],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent {
+  // Dropdown states
+  showAgentStatusDropdown = false;
+  showChatStatusDropdown = false;
+
+  // Messages
   messages: messageType[] = [
     {
       agentID: '1',
@@ -30,22 +42,31 @@ export class ChatComponent {
       time: new Date(),
     },
   ];
-  message: string = '';
-  messageValid: boolean = false;
+  
+  // Form controls
+  message = '';
+  messageValid = false;
 
+  // Statuses
   agentStatus: 'online' | 'offline' = 'online';
-
   currentChatStatus: 'open' | 'pending' | 'closed' = 'open';
 
-  handleTyping = () => {
-    if (this.message.trim().length >= 2) {
-      this.messageValid = true;
-    } else {
-      this.messageValid = false;
-    }
-  };
+  // Status options
+  chatStatusOptions: ChatStatusOption[] = [
+    { value: 'open', label: 'Open', colorClass: 'bg-green-500' },
+    { value: 'pending', label: 'Pending', colorClass: 'bg-yellow-500' },
+    { value: 'closed', label: 'Closed', colorClass: 'bg-red-500' }
+  ];
 
-  handleSend = () => {
+  // Typing handler
+  handleTyping() {
+    this.messageValid = this.message.trim().length >= 2;
+  }
+
+  // Send message
+  handleSend() {
+    if (!this.messageValid) return;
+    
     this.messages.push({
       message: this.message,
       from: 'agent',
@@ -53,36 +74,31 @@ export class ChatComponent {
       time: new Date(),
     });
 
-    // handle send message
-
     this.message = '';
-  };
+    this.messageValid = false;
+  }
 
-  handleChangeAgentStatus = (status: 'online' | 'offline') => {
-    const confirmed = confirm('Are you sure you want to change your status?');
+  // Change agent status
+  handleChangeAgentStatus(status: 'online' | 'offline') {
+    const confirmed = confirm('Change your status to ' + status + '?');
     if (confirmed) {
       this.agentStatus = status;
-      console.log('Yes, change my status');
+      this.showAgentStatusDropdown = false;
     }
-    if (status === 'offline') {
-      // handle offline status
-    }
-    if (status === 'online') {
-      // handle online status
-    }
-  };
+  }
 
-  handleChangeChatStatus = (chatStatus: 'open' | 'pending' | 'closed') => {
-    const confirmed = confirm('Are you sure you want to change ticket status?');
+  // Change chat status
+  handleChangeChatStatus(status: 'open' | 'pending' | 'closed') {
+    const confirmed = confirm('Change chat status to ' + status + '?');
     if (confirmed) {
-      this.currentChatStatus = chatStatus;
-      console.log('Yes, change chat status');
+      this.currentChatStatus = status;
+      this.showChatStatusDropdown = false;
     }
-    if (chatStatus === 'closed') {
-      // handle closed chat
-    }
-    if (chatStatus === 'pending') {
-      // handle pending chat
-    }
-  };
+  }
+
+  // Get color for current status
+  getCurrentStatusColor(): string {
+    const status = this.chatStatusOptions.find(opt => opt.value === this.currentChatStatus);
+    return status ? status.colorClass : 'bg-gray-500';
+  }
 }
