@@ -54,7 +54,7 @@ export class LoginComponent {
       next: (response) => {
         console.log(response);
         
-        this.authService.saveUser(response.data.token);
+        this.authService.saveUser(response.token);
         this.router.navigate(['/home']);
         this.loading = false;
       },
