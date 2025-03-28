@@ -1,0 +1,79 @@
+<div class=" h-screen bg-gray-100 text-gray-600 p-3 flex flex-col transition-all duration-300">
+  <div class=" flex items-center mb-10 ">
+    <img src=" assets/images/customer-service.png" width="35" height="35" alt="Customer Service">
+    <span class="text-xl font-bold">Agent Dashboard</span>
+  </div>
+  <ul class="nav flex flex-col">
+    <li class="nav-item mb-5 flex items-center">
+      <a class="nav-link rounded-md transition-all duration-200 hover:bg-gray-200 active:bg-blue-700"
+        routerLink="/users" routerLinkActive="active">
+        <i class="fa-solid fa-users "></i>
+        Customers
+      </a>
+    </li>
+    <li class="nav-item mb-5  flex items-center">
+      <a class="nav-link rounded-md transition-all duration-200 hover:bg-gray-200 active:bg-blue-700"
+        routerLink="/inbox" routerLinkActive="active">
+        <i class="fa-solid fa-inbox"></i>
+        Inbox
+      </a>
+    </li>
+    <li class="nav-item mb-5  flex items-center">
+      <a class="nav-link rounded-md transition-all duration-200 hover:bg-gray-200 active:bg-blue-700"
+        routerLink="/ticket" routerLinkActive="active">
+        <i class="fa-solid fa-ticket"></i>
+        Tickets
+      </a>
+    </li>
+    <!-- Add more navigation items here -->
+  </ul>
+
+  <!-- <div class="p-3 border-b">
+    <div class="flex justify-between items-center">
+      <span>Status</span>
+      <div class="flex items-center">
+        <input class="w-4 h-4 mr-2" type="checkbox" id="statusToggle" 
+               [checked]="agentStatus === 'online'" (change)="toggleStatus()">
+        <label class="ms-2" for="statusToggle">
+          <span [ngClass]="agentStatus === 'online' ? 'text-green-500' : 'text-red-500'">
+            {{ agentStatus | titlecase }}
+          </span>
+        </label>
+      </div>
+    </div>
+  </div> -->
+
+  <div class="mt-auto">
+    <h6 class="text-sm font-medium">Status</h6>
+    <div class="relative">
+      <button
+        class="flex justify-between items-center border border-gray-300 rounded px-3 py-1.5 text-sm bg-white hover:bg-gray-50 w-full"
+        type="button" (click)="showAgentStatusDropdown = !showAgentStatusDropdown">
+        <span>{{ agentStatus === 'online' ? 'Online' : 'Offline' }}</span>
+        <span [ngClass]="{
+                'bg-green-500': agentStatus === 'online',
+                'bg-red-500': agentStatus === 'offline'
+            }" class="rounded-full inline-block ml-2 w-3 h-3"></span>
+      </button>
+
+      @if (showAgentStatusDropdown) {
+      <ul class="absolute w-full mt-1 bg-white border border-gray-200 rounded shadow-lg z-10">
+        <li>
+          <button class="flex items-center justify-between w-full px-4 py-2 text-sm hover:bg-gray-100" type="button"
+            (click)="handleChangeAgentStatus('offline')">
+            Offline
+            <span class="ml-2 rounded-full bg-red-500 inline-block w-3 h-3"></span>
+          </button>
+        </li>
+        <li>
+          <button class="flex items-center justify-between w-full px-4 py-2 text-sm hover:bg-gray-100" type="button"
+            (click)="handleChangeAgentStatus('online')">
+            Online
+            <span class="ml-2 rounded-full bg-green-500 inline-block w-3 h-3"></span>
+          </button>
+        </li>
+      </ul>
+      }
+    </div>
+  </div>
+</div>

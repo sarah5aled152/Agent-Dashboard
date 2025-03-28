@@ -1,0 +1,44 @@
+<div class="p-4">
+    <div class="bg-gray-100  border-b-transparent w-full rounded-xl space-x-2">
+        <button
+            class="px-4 py-2 border-b-2 border-transparent hover:border-b-sky-700 text-md hover:font-semibold ">User-info
+        </button>
+        <button class="px-4 py-2 border-b-2 border-transparent hover:border-b-sky-700 text-md hover:font-semibold">All
+            Orders </button>
+        <button class="px-4 py-2 border-b-2 border-transparent hover:border-b-sky-700 text-md hover:font-semibold ">All
+            Orders </button>
+        <button class="px-4 py-2 border-b-2 border-transparent hover:border-b-sky-700 text-md hover:font-semibold ">All
+            Orders </button>
+    </div>
+    <div class="mt-5 w-full">
+        <table class="w-full  rounded-xl border-sky-700 bg-gray-100">
+            <thead>
+                <tr class="border-b-gray-500">
+                    <th class="text-left px-4 py-2 ">
+                        Date
+                    </th>
+
+
+                    <th class="text-left px-4 py-2">
+                        Order ID
+                    </th>
+
+
+                    <th class="text-left px-4 py-2">
+                        Customer
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (order of orders; track order.orderId){
+                <tr class="border-t border-gray-300">
+                    <td class="px-4 py-2">{{order.date}}</td>
+                    <td class="px-4 py-2">{{order.orderId}}</td>
+                    <td class="px-4 py-2">{{order.customer}}</td>
+                </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
