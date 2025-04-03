@@ -1,4 +1,5 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { NgClass, TitleCasePipe } from '@angular/common';
@@ -55,8 +56,8 @@ export class ChatComponent implements AfterViewInit {
     { value: 'pending', label: 'Pending', colorClass: 'bg-yellow-500' },
     { value: 'closed', label: 'Closed', colorClass: 'bg-red-500' },
   ];
-
-  constructor(private http: HttpClient, private chatService: ChatService) {}
+  constructor(private http: HttpClient, private chatService: ChatService, private router: Router) {}
+  
 
   ngOnInit() {
     // 1) Join the chat room FIRST
@@ -146,5 +147,8 @@ export class ChatComponent implements AfterViewInit {
       (opt) => opt.value === this.currentChatStatus
     );
     return status ? status.colorClass : 'bg-gray-500';
+  }
+  navigateToUserProfile(userAccessToken:string) {
+    this.router.navigate(['/user-info',userAccessToken])
   }
 }

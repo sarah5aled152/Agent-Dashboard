@@ -1,44 +1,82 @@
 <div class="p-4">
     <div class="bg-gray-100  border-b-transparent w-full rounded-xl space-x-2">
         <button
-            class="px-4 py-2 border-b-2 border-transparent hover:border-b-sky-700 text-md hover:font-semibold ">User-info
+            class="px-4 py-2    text-md "
+            (click)="activeTab='user-info'"
+            [class.border-b-sky-700]="activeTab==='user-info'"
+            [class.border-b-2]="activeTab==='user-info'"
+            [class.font-semibold]="activeTab==='user-info'"
+            [class.border-transparent]="activeTab==='user-info'">User-info
         </button>
-        <button class="px-4 py-2 border-b-2 border-transparent hover:border-b-sky-700 text-md hover:font-semibold">All
-            Orders </button>
-        <button class="px-4 py-2 border-b-2 border-transparent hover:border-b-sky-700 text-md hover:font-semibold ">All
-            Orders </button>
-        <button class="px-4 py-2 border-b-2 border-transparent hover:border-b-sky-700 text-md hover:font-semibold ">All
-            Orders </button>
+        <button
+            class="px-4 py-2    text-md "
+            (click)="activeTab='allOrders'"
+            [class.border-b-sky-700]="activeTab==='allOrders'"
+            [class.border-b-2]="activeTab==='allOrders'"
+            [class.font-semibold]="activeTab==='allOrders'"
+            [class.border-transparent]="activeTab==='allOrders'">All Orders
+        </button>
+        <button
+        class="px-4 py-2    text-md "
+        (click)="activeTab='orderHistory'"
+        [class.border-b-sky-700]="activeTab==='orderHistory'"
+        [class.border-b-2]="activeTab==='orderHistory'"
+        [class.font-semibold]="activeTab==='orderHistory'"
+        [class.border-transparent]="activeTab==='orderHistory'">Order History
+    </button>
+        
     </div>
     <div class="mt-5 w-full">
-        <table class="w-full  rounded-xl border-sky-700 bg-gray-100">
-            <thead>
-                <tr class="border-b-gray-500">
-                    <th class="text-left px-4 py-2 ">
-                        Date
-                    </th>
-
-
-                    <th class="text-left px-4 py-2">
-                        Order ID
-                    </th>
-
-
-                    <th class="text-left px-4 py-2">
-                        Customer
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (order of orders; track order.orderId){
-                <tr class="border-t border-gray-300">
-                    <td class="px-4 py-2">{{order.date}}</td>
-                    <td class="px-4 py-2">{{order.orderId}}</td>
-                    <td class="px-4 py-2">{{order.customer}}</td>
-                </tr>
-
-                }
-            </tbody>
-        </table>
+        @if (activeTab==='user-info'){
+            @if (isLoading){
+                <p class="text-center">Loading Customer Data...</p>
+            }
+            @else if (error){
+                <p class="text-center text-red-500">{{error}}</p>
+                <button (click)="loadCustomerData()" class="mt-2 text-blue-600">Retry</button>
+            }
+            @else {
+                <div class="bg-gray-100 p-4 rounded-xl">
+                    <h3 class="text-lg font-semibold mb-4">User Information</h3>
+                    <p><span>ID: </span> {{user._id}}</p>
+                    <p><span>Name: </span> {{user.username}}</p>
+                    <p><span>Email:</span> {{user.email}}</p>
+                    <p><span>Phone Number:</span> {{user.phoneNumbers}}</p>
+                   </div>
+            }
+           
+        }
+        @if (activeTab==='allOrders'){
+            <table class="w-full  rounded-xl border-sky-700 bg-gray-100">
+                <thead>
+                    <tr class="border-b-gray-500">
+                        <th class="text-left px-4 py-2 ">
+                            Date
+                        </th>
+    
+    
+                        <th class="text-left px-4 py-2">
+                            Order ID
+                        </th>
+    
+    
+                        <th class="text-left px-4 py-2">
+                            Customer
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (order of orders; track order.orderId){
+                    <tr class="border-t border-gray-300">
+                        <td class="px-4 py-2">{{order.date}}</td>
+                        <td class="px-4 py-2">{{order.orderId}}</td>
+                        <td class="px-4 py-2">{{order.customer}}</td>
+                    </tr>
+    
+                    }
+                </tbody>
+            </table>
+        }
+        
     </div>
 </div>

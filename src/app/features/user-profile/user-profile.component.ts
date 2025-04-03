@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { InfoTableComponent } from "../info-table/info-table.component";
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -10,5 +11,9 @@ import { InfoTableComponent } from "../info-table/info-table.component";
   styleUrl: './user-profile.component.css'
 })
 export class UserProfileComponent {
-
+  token: string = '';
+constructor(private route : ActivatedRoute){
+  this.token =  this.route.snapshot.paramMap.get('token')|| ''
+  console.log('Token from route:', this.token);
+}
 }

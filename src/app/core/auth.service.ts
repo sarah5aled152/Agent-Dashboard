@@ -9,7 +9,7 @@ import { jwtDecode } from 'jwt-decode';
   providedIn: 'root',
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:3000/';
+  private baseUrl = 'https://customer-support-rose.vercel.app/';
   private tokenSubject = new BehaviorSubject<string | null>(null);
 
   token$ = this.tokenSubject.asObservable();
@@ -26,6 +26,9 @@ export class AuthService {
     localStorage.setItem('token', token);
   }
 
+  getToken(): string | null {
+    return this.tokenSubject.value;
+  }
   removeUser() {
     this.tokenSubject.next(null);
     localStorage.removeItem('token');
