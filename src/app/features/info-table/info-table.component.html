@@ -33,6 +33,7 @@
   </div>
   <div class="mt-5 w-full">
     @if (activeTab==='user-info'){ @if (isLoading){
+
     <div class="flex justify-center items-center p-10">
       <mat-spinner
         class="purple-spinner"
@@ -101,6 +102,7 @@
             {{ order.shippingAddress.address }},
             {{ order.shippingAddress.city }}
           </td>
+
         </tr>
 
         }
