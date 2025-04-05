@@ -13,7 +13,11 @@ import { ActivatedRoute } from '@angular/router';
 export class UserProfileComponent {
   token: string = '';
 constructor(private route : ActivatedRoute){
-  this.token =  this.route.snapshot.paramMap.get('token')|| ''
-  console.log('Token from route:', this.token);
+  // this.token =  this.route.snapshot.paramMap.get('token')|| ''
+  // console.log('Token from route:', this.token);
+  this.route.paramMap.subscribe(params=>{
+  this.token =  params.get('token')|| ''
+  // localStorage.setItem('userAccessToken', this.token);
+  })
 }
 }

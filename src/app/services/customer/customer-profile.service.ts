@@ -10,15 +10,15 @@ export class CustomerProfileService {
   constructor(private http: HttpClient) {}
 
   getCustomerProfile(userAccessToken: string): Observable<any> {
-    console.log('token being sent:', userAccessToken);
+    // console.log('token being sent:', userAccessToken);
     if (!userAccessToken) {
       console.error('No access token provided');
     }
     const headers = new HttpHeaders({
       accesstoken: `accesstoken_${userAccessToken}`,
     });
-    console.log('Making request to:', this.apiUrl);
-    console.log('With headers:', headers);
+    // console.log('Making request to:', this.apiUrl);
+    // console.log('With headers:', headers);
 
     return this.http.get(this.apiUrl, { headers }).pipe(
       catchError((error) => {
