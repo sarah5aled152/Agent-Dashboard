@@ -55,7 +55,7 @@ export class LoginComponent {
         console.log(response);
         
         this.authService.saveUser(response.token);
-        this.router.navigate(['/home']);
+        this.router.navigate(['/chat']);
         this.loading = false;
       },
       error: (err) => {
