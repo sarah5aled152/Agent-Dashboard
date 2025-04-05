@@ -42,7 +42,7 @@ export class InfoTableComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        this.error = 'Failed to loading customer data.';
+        this.error = 'Failed to load customer data.';
         this.isLoading = false;
         console.error('full error',err);
         
