@@ -1,9 +1,10 @@
-<div class=" h-screen bg-gray-100 text-gray-600 p-3 flex flex-col transition-all duration-300">
-  <div class=" flex items-center mb-10 ">
-    <img src=" assets/images/customer-service.png" width="35" height="35" alt="Customer Service">
-    <span class="text-xl font-bold">Agent Dashboard</span>
+<div class=" h-screen items-center bg-gradient-to-r from-blue-600 to-indigo-500 text-white p-3 flex flex-col transition-all duration-300">
+  <div class=" flex items-center mb-10  rounded-2xl">
+    <img src=" assets/images/avatar.png" class="rounded-2xl mt-5 " width="90" height="90" alt="Customer Service">
+    <!-- <span class="text-xl font-bold">Agent Dashboard</span> -->
   </div>
-  <ul class="nav flex flex-col">
+  <p class="text-lg"><span class="font-medium">Customer Name: </span> {{ user.username }}</p>
+  <!-- <ul class="nav flex flex-col">
     <li class="nav-item mb-5 flex items-center">
       <a class="nav-link rounded-md transition-all duration-200 hover:bg-gray-200 active:bg-blue-700"
         routerLink="/users" routerLinkActive="active">
@@ -26,24 +27,11 @@
       </a>
     </li>
     <!-- Add more navigation items here -->
-  </ul>
+  <!-- </ul> -->
 
-  <!-- <div class="p-3 border-b">
-    <div class="flex justify-between items-center">
-      <span>Status</span>
-      <div class="flex items-center">
-        <input class="w-4 h-4 mr-2" type="checkbox" id="statusToggle" 
-               [checked]="agentStatus === 'online'" (change)="toggleStatus()">
-        <label class="ms-2" for="statusToggle">
-          <span [ngClass]="agentStatus === 'online' ? 'text-green-500' : 'text-red-500'">
-            {{ agentStatus | titlecase }}
-          </span>
-        </label>
-      </div>
-    </div>
-  </div> -->
+  
 
-  <div class="mt-auto">
+  <!-- <div class="mt-auto">
     <h6 class="text-sm font-medium">Status</h6>
     <div class="relative">
       <button
@@ -75,5 +63,5 @@
       </ul>
       }
     </div>
-  </div>
+  </div> --> 
 </div>
