@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CustomerProfileService } from '../../services/customer/customer-profile.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,15 +10,41 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
+  @Input() userAccessToken: string = '';
+  user: any = {};
+  isLoading = true;
+  error: string | null = null;
   showAgentStatusDropdown = false;
   agentStatus: 'online' | 'offline' = 'online';
   
-  constructor() { }
-  
-  ngOnInit(): void {
+  constructor(private customerProfileService: CustomerProfileService,) { 
+    
   }
   
+  ngOnInit(): void {
+    if (this.userAccessToken) {
+      this.loadCustomerData();
+    } else {
+      this.error = 'Invalid customer token.';
+      this.isLoading = false;
+    }
+  }
+  loadCustomerData(): void {
+    this.customerProfileService.getCustomerProfile(this.userAccessToken).subscribe({
+      next: (data) => {
+        console.log('Customer data:', data);
+        this.user = data.user;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load customer data.';
+        this.isLoading = false;
+        console.error('full error',err);
+        
+      },
+    });
+  }
   handleChangeAgentStatus(status: 'online' | 'offline') {
     const confirmed = confirm('Change your status to ' + status + '?');
     if (confirmed) {

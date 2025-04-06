@@ -1,10 +1,12 @@
 <div class="p-4">
+  <h2 class="text-2xl font-semibold mb-4">User Profile</h2>
+  <!-- <div class="h-screen bg-gray-100 text-gray-600 p-3 flex flex-col transition-all duration-300"></div> -->
   <div class="bg-gray-100 border-b-transparent w-full rounded-xl space-x-2">
     <button
       class="px-4 py-2 text-md"
       (click)="activeTab = 'user-info'"
-      [class.border-b-sky-700]="activeTab === 'user-info'"
-      [class.border-b-2]="activeTab === 'user-info'"
+      [class.border-b-indigo-500]="activeTab === 'user-info'"
+      [class.border-b-3]="activeTab === 'user-info'"
       [class.font-semibold]="activeTab === 'user-info'"
       [class.border-transparent]="activeTab === 'user-info'"
     >
@@ -13,8 +15,8 @@
     <button
       class="px-4 py-2 text-md"
       (click)="activeTab = 'allOrders'"
-      [class.border-b-sky-700]="activeTab === 'allOrders'"
-      [class.border-b-2]="activeTab === 'allOrders'"
+      [class.border-b-indigo-500]="activeTab === 'allOrders'"
+      [class.border-b-3]="activeTab === 'allOrders'"
       [class.font-semibold]="activeTab === 'allOrders'"
       [class.border-transparent]="activeTab === 'allOrders'"
     >
@@ -23,8 +25,8 @@
     <button
       class="px-4 py-2 text-md"
       (click)="activeTab = 'orderHistory'"
-      [class.border-b-sky-700]="activeTab === 'orderHistory'"
-      [class.border-b-2]="activeTab === 'orderHistory'"
+      [class.border-b-indigo-500]="activeTab === 'orderHistory'"
+      [class.border-b-3]="activeTab === 'orderHistory'"
       [class.font-semibold]="activeTab === 'orderHistory'"
       [class.border-transparent]="activeTab === 'orderHistory'"
     >
@@ -53,12 +55,40 @@
       </button>
     </div>
     } @else {
-    <div class="bg-gray-100 p-4 rounded-xl">
+    <div class="bg-gray-100 p-6 rounded-xl">
       <h3 class="text-lg font-semibold mb-4">User Information</h3>
-      <p><span>ID: </span> {{ user._id }}</p>
-      <p><span>Name: </span> {{ user.username }}</p>
-      <p><span>Email:</span> {{ user.email }}</p>
-      <p><span>Phone Number:</span> {{ user.phoneNumbers }}</p>
+      <div>
+        <label class="block text-gray-700">Email</label>
+        <input
+          type="text"
+          class="border border-gray-300 p-2 w-lg text-gray-700 rounded-lg mb-4 focus:outline-none"
+          placeholder="Customer Email"
+          [value]="user.email"
+        />
+
+        <label class="block text-gray-700">Customer ID</label>
+        <input
+          type="text"
+          class="border border-gray-300 p-2 w-lg text-gray-700 rounded-lg mb-4 focus:outline-none"
+          placeholder="Customer ID"
+          [value]="user._id"
+        />
+        <label class="block text-gray-700">phoneNumber</label>
+        <input
+          type="text"
+          class="border border-gray-300 p-2 w-lg text-gray-700 rounded-lg mb-4 focus:outline-none"
+          placeholder="Customer phoneNumber"
+          [value]="user.phoneNumbers"
+        />
+        <label class="block text-gray-700">Address</label>
+
+        <input
+          type="text"
+          class="border border-gray-300 p-2 w-lg text-gray-700 rounded-lg focus:outline-none"
+          placeholder="Customer address"
+          [value]="user.addresses"
+        />
+      </div>
     </div>
     } } @if (activeTab==='allOrders'){ @if (isLoading){
     <div class="flex justify-center items-center p-10">
@@ -83,9 +113,11 @@
       <tbody>
         @for (order of orders; track order._id){
         <tr class="border-t border-gray-300">
-          <td class="px-4 py-3">{{ order._id }}</td>
-          <td class="px-4 py-3">{{ order.createdAt | date : "medium" }}</td>
-          <td class="px-4 py-3">
+          <td class="px-4 py-3 text-gray-700">{{ order._id }}</td>
+          <td class="px-4 py-3 text-gray-700">
+            {{ order.createdAt | date : "medium" }}
+          </td>
+          <td class="px-4 py-3 text-gray-700">
             <ul>
               @for (item of order.orderItems; track item._id){
               <li>
@@ -96,13 +128,14 @@
               }
             </ul>
           </td>
-          <td class="px-4 py-4">${{ order.totalPrice | number : "1.2-2" }}</td>
-          <td class="px-4 py-4">{{ order.orderStatus }}</td>
-          <td class="px-4 py-4">
+          <td class="px-4 py-4 text-gray-700">
+            ${{ order.totalPrice | number : "1.2-2" }}
+          </td>
+          <td class="px-4 py-4 text-gray-700">{{ order.orderStatus }}</td>
+          <td class="px-4 py-4 text-gray-700">
             {{ order.shippingAddress.address }},
             {{ order.shippingAddress.city }}
           </td>
-
         </tr>
 
         }
