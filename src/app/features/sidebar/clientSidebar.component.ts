@@ -4,13 +4,13 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CustomerProfileService } from '../../services/customer/customer-profile.service';
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'app-clientsidebar',
   standalone:true,
   imports: [RouterLink,RouterLinkActive,CommonModule],
-  templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.css'
+  templateUrl: './clientsidebar.component.html',
+  styleUrl: './clientsidebar.component.css'
 })
-export class SidebarComponent implements OnInit {
+export class ClientSidebarComponent implements OnInit {
   @Input() userAccessToken: string = '';
   user: any = {};
   isLoading = true;

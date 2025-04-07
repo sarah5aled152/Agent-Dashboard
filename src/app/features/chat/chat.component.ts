@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { NgClass, TitleCasePipe } from '@angular/common';
 import { ChatService } from '../../services/chat/chat.service';
+import { AgentSidebarComponent } from "../sidebar/agent-sidebar/agent-sidebar.component";
 
 export interface messageType {
   id?: string;
@@ -24,7 +25,7 @@ interface ChatStatusOption {
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [FormsModule, NgClass, TitleCasePipe],
+  imports: [FormsModule, NgClass, TitleCasePipe, AgentSidebarComponent],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
