@@ -1,12 +1,12 @@
 import { Component, input } from '@angular/core';
-import { SidebarComponent } from "../sidebar/sidebar.component";
+import { ClientSidebarComponent } from "../sidebar/clientSidebar.component";
 import { InfoTableComponent } from "../info-table/info-table.component";
 import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
   selector: 'app-user-profile',
-  imports: [SidebarComponent, InfoTableComponent],
+  imports: [ClientSidebarComponent, InfoTableComponent],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })

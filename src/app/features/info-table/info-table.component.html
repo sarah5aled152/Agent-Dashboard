@@ -63,6 +63,7 @@
           type="text"
           class="border border-gray-300 p-2 w-lg text-gray-700 rounded-lg mb-4 focus:outline-none"
           placeholder="Customer Email"
+          readonly
           [value]="user.email"
         />
 
@@ -71,6 +72,7 @@
           type="text"
           class="border border-gray-300 p-2 w-lg text-gray-700 rounded-lg mb-4 focus:outline-none"
           placeholder="Customer ID"
+          readonly
           [value]="user._id"
         />
         <label class="block text-gray-700">phoneNumber</label>
@@ -78,6 +80,7 @@
           type="text"
           class="border border-gray-300 p-2 w-lg text-gray-700 rounded-lg mb-4 focus:outline-none"
           placeholder="Customer phoneNumber"
+          readonly
           [value]="user.phoneNumbers"
         />
         <label class="block text-gray-700">Address</label>
@@ -86,6 +89,7 @@
           type="text"
           class="border border-gray-300 p-2 w-lg text-gray-700 rounded-lg focus:outline-none"
           placeholder="Customer address"
+          readonly
           [value]="user.addresses"
         />
       </div>
