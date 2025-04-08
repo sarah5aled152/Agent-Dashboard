@@ -9,21 +9,31 @@ import { TicketsPageComponent } from './features/tickets-page/tickets-page.compo
 import { SettingComponent } from './features/settings/setting/setting.component';
 import { ProfileComponent } from './features/settings/profile/profile.component';
 import { SecurityComponent } from './features/settings/security/security.component';
+import { LayoutComponent } from './layout/layout/layout.component';
 // import { NavbarComponent } from './features/navbar/navbar.component';
 
 export const routes: Routes = [
-  { path: '', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  // { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
-  // { path: 'navbar', component: NavbarComponent, canActivate: [AuthGuard] },
-  { path: 'user-info/:token', component: UserProfileComponent, canActivate: [AuthGuard] },
-  { path: 'tickets', component: TicketsPageComponent, canActivate: [AuthGuard] },
-  { path: 'settings', component: SettingComponent, canActivate: [AuthGuard],
-    children:[
-      { path:'profile',component:ProfileComponent,canActivate:[AuthGuard]},
-      {path:'security',component:SecurityComponent}
+  { 
+    path: '', 
+    component: LayoutComponent, 
+    children: [
+      { path: '', redirectTo: 'login', pathMatch: 'full' }, // Default child route
+      { path: 'login', component: LoginComponent },
+      { path: 'register', component: RegisterComponent },
+      { path: 'user-info/:token', component: UserProfileComponent, canActivate: [AuthGuard] },
+      { path: 'tickets', component: TicketsPageComponent, canActivate: [AuthGuard] },
+      { 
+        path: 'settings', 
+        component: SettingComponent, 
+        canActivate: [AuthGuard],
+        children: [
+          { path: '', redirectTo: 'profile', pathMatch: 'full' }, // Default child route for settings
+          { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+          { path: 'security', component: SecurityComponent, canActivate: [AuthGuard] } // Added AuthGuard
+        ]
+      },
+      { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] }
     ]
-   },
-  { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] },
-  { path: '**', redirectTo: '' }
+  },
+  { path: '**', redirectTo: '' } // Moved wildcard route to the root level
 ];
