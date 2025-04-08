@@ -13,27 +13,43 @@ import { LayoutComponent } from './layout/layout/layout.component';
 // import { NavbarComponent } from './features/navbar/navbar.component';
 
 export const routes: Routes = [
-  { 
-    path: '', 
-    component: LayoutComponent, 
+  {
+    path: '',
+    component: LayoutComponent,
     children: [
       { path: '', redirectTo: 'login', pathMatch: 'full' }, // Default child route
       { path: 'login', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
-      { path: 'user-info/:token', component: UserProfileComponent, canActivate: [AuthGuard] },
-      { path: 'tickets', component: TicketsPageComponent, canActivate: [AuthGuard] },
-      { 
-        path: 'settings', 
-        component: SettingComponent, 
+      {
+        path: 'user-info/:token',
+        component: UserProfileComponent,
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'tickets',
+        component: TicketsPageComponent,
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'settings',
+        component: SettingComponent,
         canActivate: [AuthGuard],
         children: [
           { path: '', redirectTo: 'profile', pathMatch: 'full' }, // Default child route for settings
-          { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
-          { path: 'security', component: SecurityComponent, canActivate: [AuthGuard] } // Added AuthGuard
-        ]
+          {
+            path: 'profile',
+            component: ProfileComponent,
+            canActivate: [AuthGuard],
+          },
+          {
+            path: 'security',
+            component: SecurityComponent,
+            canActivate: [AuthGuard],
+          }, // Added AuthGuard
+        ],
       },
-      { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] }
-    ]
+      { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] },
+    ],
   },
-  { path: '**', redirectTo: '' } // Moved wildcard route to the root level
+  { path: '**', redirectTo: '' }, // Moved wildcard route to the root level
 ];
