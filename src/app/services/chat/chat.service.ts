@@ -37,6 +37,16 @@ export class ChatService {
   joinChat(chatId: string) {
     console.log('[Agent] Joining room:', chatId);
     this.socket.emit('joinChat', { chatId, userType: 'agent' });
+    this.socket.on('notification', (payload: any) => {
+      console.log('notification:', payload);
+    });
+  }
+
+  notification() {
+    console.log('[Agent] Listening for notifications...');
+    this.socket.on('notification', (payload: any) => {
+      console.log('notification:', payload);
+    });
   }
 
   sendMessage(
@@ -54,7 +64,7 @@ export class ChatService {
     console.log('[Agent] Listening for socket messages...');
 
     // Main event for receiving new messages
-    this.socket.on('messageReceived', ({ message }) => {
+    this.socket.on('messageReceived', ({ message }: { message: any }) => {
       console.log('[Agent] Socket messageReceived:', message);
 
       // If the server returns `_id` but no `id`, rename it to `id`

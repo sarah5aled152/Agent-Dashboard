@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { NgClass, TitleCasePipe } from '@angular/common';
 import { ChatService } from '../../services/chat/chat.service';
-import { AgentSidebarComponent } from "../sidebar/agent-sidebar/agent-sidebar.component";
+import { AgentSidebarComponent } from '../sidebar/agent-sidebar/agent-sidebar.component';
 
-export interface messageType {
-  id?: string;
-  chatId: string;
-  receiverId?: string;
-  senderId: string;
-  content: string;
-  from?: 'client' | 'agent';
-  createdAt?: Date;
-}
+// export interface messageType {
+//   id?: string;
+//   chatId: string;
+//   receiverId?: string;
+//   senderId: string;
+//   content: string;
+//   from?: 'client' | 'agent';
+//   createdAt?: Date;
+// }
 
 interface ChatStatusOption {
   value: 'open' | 'pending' | 'closed';
@@ -37,18 +37,18 @@ export class ChatComponent implements AfterViewInit {
   showChatStatusDropdown = false;
 
   // Messages array
-  messages: messageType[] = [];
+  messages: any[] = [];
 
   // For input
   message = '';
   messageValid = false;
 
   // Agent & Chat statuses
-  agentStatus: 'online' | 'offline' = 'online';
+  agentStatus: 'online' | 'away' = 'online';
   currentChatStatus: 'open' | 'pending' | 'closed' = 'open';
 
   // IDs
-  chatId = '67e388a3698cf44ae3924e43';
+  chatId = '67f5604a075802b2493d6e91';
   userId = localStorage.getItem('userId') || 'agent';
 
   // Chat status dropdown options
@@ -57,21 +57,21 @@ export class ChatComponent implements AfterViewInit {
     { value: 'pending', label: 'Pending', colorClass: 'bg-yellow-500' },
     { value: 'closed', label: 'Closed', colorClass: 'bg-red-500' },
   ];
-  constructor(private http: HttpClient, private chatService: ChatService, private router: Router) {}
-  
+  constructor(
+    private http: HttpClient,
+    private chatService: ChatService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    // 1) Join the chat room FIRST
+    // this.chatService.notification();
     this.chatService.joinChat(this.chatId);
 
-    // 2) Subscribe to live socket messages
     this.chatService.getMessagesStream().subscribe((msgs) => {
-      this.messages = msgs as messageType[];
-      // Auto-scroll on new messages
+      this.messages = msgs as any[];
       setTimeout(() => this.scrollToBottom(), 100);
     });
 
-    // 3) Fetch the existing conversation from your API
     this.getMessages();
   }
 
@@ -85,10 +85,19 @@ export class ChatComponent implements AfterViewInit {
     const token = localStorage.getItem('token') || '';
     const headers = { Authorization: `Bearer ${token}` };
 
-    this.http.get<messageType[]>(url, { headers }).subscribe((response) => {
+    this.http.get<any[]>(url, { headers }).subscribe((response) => {
       console.log('[Agent] Fetched messages from BE:', response);
-      // Merge them with any new socket messages that arrived
       this.chatService.setInitialMessages(response);
+    });
+  }
+
+  changeAgentStatus() {
+    const url = `http://localhost:3000/profile/agent/${this.agentStatus}`;
+    const token = localStorage.getItem('token') || '';
+    console.log(token);
+    const headers = { Authorization: `Bearer ${token}` };
+    this.http.put<any>(url, { headers }).subscribe((response) => {
+      console.log('agent status changed', response);
     });
   }
 
@@ -101,7 +110,7 @@ export class ChatComponent implements AfterViewInit {
 
     const newMessageContent = this.message.trim();
 
-    const localMessage: messageType = {
+    const localMessage: any = {
       id: 'temp-' + Date.now(),
       chatId: this.chatId,
       senderId: this.userId,
@@ -128,10 +137,11 @@ export class ChatComponent implements AfterViewInit {
   }
 
   // Agent status
-  handleChangeAgentStatus(status: 'online' | 'offline') {
+  handleChangeAgentStatus(status: 'online' | 'away') {
     if (confirm('Change your status to ' + status + '?')) {
       this.agentStatus = status;
       this.showAgentStatusDropdown = false;
+      this.changeAgentStatus();
     }
   }
 
@@ -149,7 +159,7 @@ export class ChatComponent implements AfterViewInit {
     );
     return status ? status.colorClass : 'bg-gray-500';
   }
-  navigateToUserProfile(userAccessToken:string) {
-    this.router.navigate(['/user-info',userAccessToken])
+  navigateToUserProfile(userAccessToken: string) {
+    this.router.navigate(['/user-info', userAccessToken]);
   }
 }
