@@ -1,6 +1,6 @@
-<div class="p-4">
+<div class="p-4  flex flex-col  min-h-screen overflow-y-auto">
   <h2 class="text-2xl font-semibold mb-4">User Profile</h2>
-  <!-- <div class="h-screen bg-gray-100 text-gray-600 p-3 flex flex-col transition-all duration-300"></div> -->
+  
   <div class="bg-gray-100 border-b-transparent w-full rounded-xl space-x-2">
     <button
       class="px-4 py-2 text-md"
@@ -33,7 +33,7 @@
       Order History
     </button>
   </div>
-  <div class="mt-5 w-full">
+  <div class="mt-5 w-full  flex-grow ">
     @if (activeTab==='user-info'){ @if (isLoading){
 
     <div class="flex justify-center items-center p-10">
@@ -95,7 +95,7 @@
       </div>
     </div>
     } } @if (activeTab==='allOrders'){ @if (isLoading){
-    <div class="flex justify-center items-center p-10">
+    <div class="flex justify-center items-center p-10 ">
       <mat-spinner
         class="purple-spinner"
         diameter="60"
@@ -103,48 +103,69 @@
       ></mat-spinner>
     </div>
     }
-    <table class="w-full rounded-xl border-sky-700 bg-gray-100">
-      <thead>
-        <tr class="border-b-gray-500">
-          <th class="text-left px-4 py-3">Order ID</th>
-          <th class="text-left px-4 py-3">Date</th>
-          <th class="text-left px-4 py-3">Items</th>
-          <th class="text-left px-4 py-3">Total Price</th>
-          <th class="text-left px-4 py-3">Status</th>
-          <th class="text-left px-4 py-3">Shipping Address</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (order of orders; track order._id){
-        <tr class="border-t border-gray-300">
-          <td class="px-4 py-3 text-gray-700">{{ order._id }}</td>
-          <td class="px-4 py-3 text-gray-700">
-            {{ order.createdAt | date : "medium" }}
-          </td>
-          <td class="px-4 py-3 text-gray-700">
-            <ul>
-              @for (item of order.orderItems; track item._id){
-              <li>
-                {{ item.title }} (QTY: {{ item.quantity }} , Price: ${{
-                  item.price
-                }})
-              </li>
-              }
-            </ul>
-          </td>
-          <td class="px-4 py-4 text-gray-700">
-            ${{ order.totalPrice | number : "1.2-2" }}
-          </td>
-          <td class="px-4 py-4 text-gray-700">{{ order.orderStatus }}</td>
-          <td class="px-4 py-4 text-gray-700">
-            {{ order.shippingAddress.address }},
-            {{ order.shippingAddress.city }}
-          </td>
-        </tr>
+    @else{
+      <div class="bg-gray-100 rounded-xl overflow-hidden ">
+        <div class="overflow-x-auto">
+          <table class="w-full   ">
+            <thead>
+              <tr class="border-b-gray-500">
+                <th class="text-left px-4 py-3">Order ID</th>
+                <th class="text-left px-4 py-3">Date</th>
+                <th class="text-left px-4 py-3">Items</th>
+                <th class="text-left px-4 py-3">Total Price</th>
+                <th class="text-left px-4 py-3">Status</th>
+                <th class="text-left px-4 py-3">Shipping Address</th>
+              </tr>
+            </thead>
+            <tbody class=" ">
+              @for (order of orders; track order._id){
+              <tr class="border-t border-gray-300">
+                <td class="px-4 py-3 text-gray-700">{{ order._id }}</td>
+                <td class="px-4 py-3 text-gray-700">
+                  {{ order.createdAt | date : "medium" }}
+                </td>
+                <td class="px-4 py-3 text-gray-700">
+                  <ul>
+                    @for (item of order.orderItems; track item._id){
+                    <li>
+                      {{ item.title }} (QTY: {{ item.quantity }} , Price: ${{
+                        item.price
+                      }})
+                    </li>
+                    }
+                  </ul>
+                </td>
+                <td class="px-4 py-4 text-gray-700">
+                  ${{ order.totalPrice | number : "1.2-2" }}
+                </td>
+               
 
-        }
-      </tbody>
-    </table>
+                  <td class="px-4 py-4 text-gray-700 "> <span 
+                    class="inline-block px-2 py-1 rounded-full"
+                    [ngClass]="{
+                      'bg-yellow-200 text-yellow-800': order.orderStatus === 'Pending',
+                      'bg-green-200 text-green-800': order.orderStatus === 'Completed',
+                      'bg-red-200 text-red-800': order.orderStatus === 'Cancelled'
+                    }"
+                  >
+                    {{ order.orderStatus }}
+                  </span></td>
+                
+                <td class="px-4 py-4 text-gray-700">
+                  {{ order.shippingAddress.address }},
+                  {{ order.shippingAddress.city }}
+                </td>
+              </tr>
+      
+              }
+            </tbody>
+          </table>
+        </div>
+        
+      </div>
+
+      }
     }
+    
   </div>
 </div>
