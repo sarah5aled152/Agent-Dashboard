@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import io, { Socket } from 'socket.io-client';
 import { BehaviorSubject } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
 interface Message {
   id?: string; // We'll generate a temp ID if none is provided
@@ -19,7 +20,7 @@ export class ChatService {
   private messages$ = new BehaviorSubject<Message[]>([]);
 
   constructor() {
-    // Connect socket once
+    // Connect once on service init
     this.socket = io('http://localhost:3000', {
       transports: ['websocket', 'polling'],
       autoConnect: true,
@@ -30,23 +31,19 @@ export class ChatService {
       console.log('Agent socket disconnected')
     );
 
-    // Listen for new messages once in the constructor
+    // Join the notification room right away
+    this.joinNotification();
+
+    // Listen for all incoming events/messages
     this.listenForMessages();
   }
 
-  joinChat(chatId: string) {
-    console.log('[Agent] Joining room:', chatId);
-    this.socket.emit('joinChat', { chatId, userType: 'agent' });
-    this.socket.on('notification', (payload: any) => {
-      console.log('notification:', payload);
-    });
-  }
-
-  notification() {
-    console.log('[Agent] Listening for notifications...');
-    this.socket.on('notification', (payload: any) => {
-      console.log('notification:', payload);
-    });
+  // Called once in the constructor, so the agent is always in the notification room
+  joinNotification() {
+    const token: any = localStorage.getItem('token');
+    const decoded: any = jwtDecode(token);
+    console.log('Agent id:', decoded);
+    this.socket.emit('joinNotification', decoded.id);
   }
 
   sendMessage(
@@ -63,31 +60,37 @@ export class ChatService {
   private listenForMessages() {
     console.log('[Agent] Listening for socket messages...');
 
-    // Main event for receiving new messages
+    // Fired when a new message arrives in the chat
     this.socket.on('messageReceived', ({ message }: { message: any }) => {
       console.log('[Agent] Socket messageReceived:', message);
 
-      // If the server returns `_id` but no `id`, rename it to `id`
+      // Convert `_id` to `id` if needed
       if (message._id && !message.id) {
         message.id = message._id;
         delete message._id;
       }
 
-      // Merge it into our local BehaviorSubject
+      // Merge into our local BehaviorSubject if not already there
       const current = this.messages$.getValue();
       const exists = current.some((m) => m.id === message.id);
       if (!exists) {
         this.messages$.next([...current, message]);
       }
     });
+
+    this.socket.on('chatCreated', ({ chatId }: { chatId: any }) => {
+      console.log('[Agent] chatCreated event for chatId:', chatId);
+      // You can handle UI notifications, fetch chat details, etc.
+    });
   }
 
+  // Called after you fetch initial messages from your API
   setInitialMessages(messages: Message[]) {
     console.log('[Agent] setInitialMessages from BE:', messages);
     const current = this.messages$.getValue();
     const combined = [...messages];
 
-    // Append any socket messages that arrived before the fetch
+    // If the socket had already received messages before your fetch, merge them here
     current.forEach((msg) => {
       if (msg.id && !combined.some((m) => m.id === msg.id)) {
         combined.push(msg);
@@ -97,15 +100,18 @@ export class ChatService {
     this.messages$.next(combined);
   }
 
+  // Add a new message to local state (e.g. optimistic UI updates)
   pushLocalMessage(messageObj: Message) {
     const current = this.messages$.getValue();
     this.messages$.next([...current, messageObj]);
   }
 
+  // Allows components to subscribe to message updates
   getMessagesStream() {
     return this.messages$.asObservable();
   }
 
+  // Synchronous getter if you need the current state
   getCurrentMessages(): Message[] {
     return this.messages$.getValue();
   }

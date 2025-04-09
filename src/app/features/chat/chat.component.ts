@@ -72,20 +72,9 @@ export class ChatComponent implements AfterViewInit {
     private router: Router
   ) {}
 
-  ngOnInit() {
-    this.chatService.notification();
-    this.chatService.joinChat(this.chatId);
-
-    this.chatService.getMessagesStream().subscribe((msgs) => {
-      this.messages = msgs as any[];
-      setTimeout(() => this.scrollToBottom(), 100);
-    });
-
-    this.getMessages();
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
-    // Scroll to bottom on component init
     setTimeout(() => this.scrollToBottom(), 300);
   }
 
