@@ -34,19 +34,6 @@ export const routes: Routes = [
         path: 'settings',
         component: SettingComponent,
         canActivate: [AuthGuard],
-        children: [
-          { path: '', redirectTo: 'profile', pathMatch: 'full' }, // Default child route for settings
-          {
-            path: 'profile',
-            component: ProfileComponent,
-            canActivate: [AuthGuard],
-          },
-          {
-            path: 'security',
-            component: SecurityComponent,
-            canActivate: [AuthGuard],
-          }, // Added AuthGuard
-        ],
       },
       { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] },
     ],
