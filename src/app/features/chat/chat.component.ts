@@ -48,7 +48,7 @@ export class ChatComponent implements AfterViewInit {
   currentChatStatus: 'open' | 'pending' | 'closed' = 'open';
 
   // IDs
-  chatId = '67f5604a075802b2493d6e91';
+  chatId = '67f595dbbe334dd61219832a';
   userId = localStorage.getItem('userId') || 'agent';
 
   // Chat status dropdown options
@@ -64,7 +64,7 @@ export class ChatComponent implements AfterViewInit {
   ) {}
 
   ngOnInit() {
-    // this.chatService.notification();
+    this.chatService.notification();
     this.chatService.joinChat(this.chatId);
 
     this.chatService.getMessagesStream().subscribe((msgs) => {

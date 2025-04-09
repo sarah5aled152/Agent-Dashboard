@@ -1,13 +1,28 @@
-
-<!-- <div class="flex flex-col ">
-
-    <app-profile class="flex-1 " ></app-profile>
-    <app-security class=""></app-security>
+<!-- <div class="">
+  <div class="flex flex-row">
+    <app-agent-sidebar class="w-[250px]"></app-agent-sidebar>
+    <app-profile></app-profile>
+    <app-security></app-security>
+  </div>
 </div> -->
-<!-- settings.component.html -->
-<div class="p-6">
-    <div class="flex flex-col gap-6">
+
+
+<!-- 
+  Make the outer container a flex container that fills
+  the screen height, with a light background and some padding.
+  The sidebar is a fixed width, and the main content can flex.
+-->
+
+<div class="min-h-screen bg-gray-100">
+  <div class="flex flex-row">
+    <!-- Sidebar -->
+    <app-agent-sidebar class="w-[250px] bg-white shadow-md"></app-agent-sidebar>
+
+    <!-- Main content area -->
+    <div class="flex-1 p-6">
       <app-profile></app-profile>
+      <app-edit-profile></app-edit-profile>
       <app-security></app-security>
     </div>
   </div>
+</div>
