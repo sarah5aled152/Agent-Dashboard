@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -22,10 +27,10 @@ import { CommonModule } from '@angular/common';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -39,8 +44,15 @@ export class LoginComponent {
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
+  }
+
+  ngOnInit() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.router.navigate(['/chat']);
+    }
   }
 
   onSubmit() {
@@ -53,7 +65,7 @@ export class LoginComponent {
     this.authService.login(email, password).subscribe({
       next: (response) => {
         console.log(response);
-        
+
         this.authService.saveUser(response.token);
         this.router.navigate(['/chat']);
         this.loading = false;
@@ -65,7 +77,7 @@ export class LoginComponent {
           this.error = 'Invalid email or password. Please try again!';
         }
         this.loading = false;
-      }
+      },
     });
   }
 }

@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { NgClass, TitleCasePipe } from '@angular/common';
 import { ChatService } from '../../services/chat/chat.service';
 import { AgentSidebarComponent } from '../sidebar/agent-sidebar/agent-sidebar.component';
+import { EmptyComponent } from '../empty/empty.component';
 
 // export interface messageType {
 //   id?: string;
@@ -25,7 +26,13 @@ interface ChatStatusOption {
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [FormsModule, NgClass, TitleCasePipe, AgentSidebarComponent],
+  imports: [
+    FormsModule,
+    NgClass,
+    TitleCasePipe,
+    AgentSidebarComponent,
+    EmptyComponent,
+  ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
@@ -35,6 +42,8 @@ export class ChatComponent implements AfterViewInit {
   // Dropdown toggles
   showAgentStatusDropdown = false;
   showChatStatusDropdown = false;
+
+  busy = false;
 
   // Messages array
   messages: any[] = [];
