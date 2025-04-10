@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import io, { Socket } from 'socket.io-client';
 import { BehaviorSubject } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import { AgentStatusService } from '../agent-status/agent-status.service';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
@@ -13,7 +14,7 @@ export class ChatService {
   private readonly messagesSubject = new BehaviorSubject<any[]>([]);
   readonly messages$ = this.messagesSubject.asObservable();
 
-  constructor() {
+  constructor(private agentStatusService: AgentStatusService) {
     this.socket = io('http://localhost:3000', {
       transports: ['websocket', 'polling'],
       autoConnect: true,
@@ -34,24 +35,13 @@ export class ChatService {
     this.socket.emit('joinNotification', id);
   }
 
-  sendMessage(content: string, senderId: string, receiverId?: string): void {
-    const chatId = this.chatIdSubject.value;
-    if (!chatId) return;
-
-    this.socket.emit('sendMessage', {
-      chatId,
-      message: content,
-      senderId,
-      receiverId,
-    });
-  }
-
   private listenForEvents(): void {
-    this.socket.on('chatCreated', ({ chatId }: { chatId: string }) => {
+    this.socket.on('chatCreated', (chatId: any) => {
       console.log('[Agent] chatCreated →', chatId);
       this.socket.emit('joinChat', { chatId, userType: 'agent' });
-      console.log('[Agent] joinChat emitted for', chatId);
       this.chatIdSubject.next(chatId);
+
+      this.agentStatusService.refreshStatusFromServer(); // 👈 refresh status
     });
 
     this.socket.on('messageReceived', ({ message }: { message: any }) => {
@@ -66,6 +56,8 @@ export class ChatService {
       if (!current.some((m) => m.id === message.id)) {
         this.messagesSubject.next([...current, message]);
       }
+
+      this.agentStatusService.refreshStatusFromServer(); // 👈 refresh status
     });
   }
 
@@ -79,11 +71,26 @@ export class ChatService {
     this.messagesSubject.next(merged);
   }
 
-  /** Called when agent loads and already has active chats */
   selectChat(chatId: string): void {
     if (!chatId) return;
     this.socket.emit('joinChat', { chatId, userType: 'agent' });
-    console.log('[Agent] joinChat emitted (manual) →', chatId);
     this.chatIdSubject.next(chatId);
+  }
+
+  sendMessage(content: string, senderId: string, receiverId?: string): void {
+    const chatId = this.chatIdSubject.value;
+    if (!chatId) return;
+
+    this.socket.emit('sendMessage', {
+      chatId,
+      message: content,
+      senderId,
+      receiverId,
+    });
+  }
+
+  resetChat(): void {
+    this.chatIdSubject.next(null);
+    this.messagesSubject.next([]);
   }
 }

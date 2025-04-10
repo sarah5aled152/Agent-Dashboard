@@ -13,6 +13,7 @@ import { NgClass, TitleCasePipe } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { ChatService } from '../../services/chat/chat.service';
+import { AgentStatusService } from '../../services/agent-status/agent-status.service';
 import { AgentSidebarComponent } from '../sidebar/agent-sidebar/agent-sidebar.component';
 import { EmptyComponent } from '../empty/empty.component';
 import { DatePipe } from '@angular/common';
@@ -34,7 +35,6 @@ import { DatePipe } from '@angular/common';
 export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
-  showAgentStatusDropdown = false;
   showChatStatusDropdown = false;
   busy = false;
 
@@ -43,7 +43,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   message = '';
   messageValid = false;
 
-  agentStatus: 'online' | 'away' = 'online';
   currentChatStatus: any;
 
   userId = localStorage.getItem('userId') ?? 'agent';
@@ -58,6 +57,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private http: HttpClient,
     private chatService: ChatService,
+    private agentStatusService: AgentStatusService,
     private router: Router
   ) {}
 
@@ -144,7 +144,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.messages.push(localMessage);
     this.chatService.sendMessage(content, this.userId);
-
     this.message = '';
     this.messageValid = false;
 
@@ -161,39 +160,25 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  handleChangeAgentStatus(status: 'online' | 'away'): void {
-    if (confirm('Change your status to ' + status + '?')) {
-      this.agentStatus = status;
-      this.showAgentStatusDropdown = false;
-      this.changeAgentStatus();
-    }
-  }
-
-  private changeAgentStatus(): void {
-    const url = `http://localhost:3000/profile/agent/${this.agentStatus}`;
-    const token = localStorage.getItem('token') ?? '';
-    const headers = { Authorization: `Bearer ${token}` };
-
-    this.http.put<any>(url, { headers }).subscribe((response) => {
-      console.log('Agent status changed', response);
-    });
-  }
   private updateChatStatus(status: string): void {
     const token = localStorage.getItem('token') ?? '';
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-
     const url = `http://localhost:3000/chats/agent/${this.chatId}/${status}`;
 
     this.http.put(url, {}, { headers }).subscribe({
       next: () => {
         console.log('[Agent] Chat status updated to:', status);
         this.checkForNextActiveChat();
+
+        // Refresh agent status after chat is resolved to reflect change in UI
+        this.agentStatusService.getStatus().subscribe();
       },
       error: (err) => {
         console.error('[Agent] Failed to update status:', err);
       },
     });
   }
+
   private checkForNextActiveChat(): void {
     const url = 'http://localhost:3000/chats/agent';
     const token = localStorage.getItem('token') ?? '';
@@ -203,11 +188,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (chats) => {
         if (Array.isArray(chats) && chats.length > 0) {
           const nextChat = chats[0];
-          this.chatService.selectChat(nextChat.id); // join next chat
-          this.fetchHistory(nextChat.id); // fetch messages
+          this.chatService.selectChat(nextChat.id);
+          this.fetchHistory(nextChat.id);
           this.busy = true;
         } else {
-          // no active chats
           this.busy = false;
           this.chatId = null;
           this.messages = [];
@@ -225,7 +209,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     if (confirm(`Change chat status to "${status}"?`)) {
       this.currentChatStatus = status;
       this.showChatStatusDropdown = false;
-
       this.updateChatStatus(status);
     }
   }
