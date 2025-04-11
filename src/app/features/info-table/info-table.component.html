@@ -98,8 +98,8 @@
 
               <td class="px-4 py-4 text-gray-700 "> <span class="inline-block px-2 py-1 rounded-full" [ngClass]="{
                       'bg-yellow-200 text-yellow-800': order.orderStatus === 'Pending',
-                      'bg-green-200 text-green-800': order.orderStatus === 'Completed',
-                      'bg-red-200 text-red-800': order.orderStatus === 'Cancelled'
+                      'bg-green-200 text-green-800 px-4': order.orderStatus === 'Paid',
+                      'bg-blue-200 text-blue-400-800': order.orderStatus === 'Placed'
                     }">
                   {{ order.orderStatus }}
                 </span></td>
