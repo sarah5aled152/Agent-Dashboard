@@ -87,6 +87,18 @@ export class AgentSidebarComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();
+    this.agentStatusService.updateStatus('away').subscribe({
+      next: () => {
+        this.chatService.resetChat();
+        this.authService.logout();
+      },
+      error: (err) => {
+        console.error(
+          '[Sidebar] Failed to set status to away before logout',
+          err
+        );
+        alert('Something went wrong logging you out.');
+      },
+    });
   }
 }
