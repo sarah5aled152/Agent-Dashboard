@@ -13,6 +13,7 @@ import { EditProfileComponent } from '../edit-profile/edit-profile.component';
     SecurityComponent,
     AgentSidebarComponent,
     EditProfileComponent,
+
   ],
   templateUrl: './setting.component.html',
   styleUrl: './setting.component.css',

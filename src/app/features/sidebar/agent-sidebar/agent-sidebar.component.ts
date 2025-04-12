@@ -90,15 +90,29 @@ export class AgentSidebarComponent implements OnInit {
     this.agentStatusService.updateStatus('away').subscribe({
       next: () => {
         this.chatService.resetChat();
-        this.authService.logout();
+        this.authService.logout().subscribe({
+          next: () => {
+            console.log('Logout successful');
+          },
+          error: (err) => {
+            console.error('[Sidebar] Logout failed:', err);
+            alert('Failed to logout. Please try again.');
+          }
+        });
       },
       error: (err) => {
-        console.error(
-          '[Sidebar] Failed to set status to away before logout',
-          err
-        );
-        alert('Something went wrong logging you out.');
-      },
+        console.error('[Sidebar] Failed to set status to away before logout:', err);
+        // Still try to logout even if status update fails
+        this.authService.logout().subscribe({
+          next: () => {
+            console.log('Logout successful despite status update failure');
+          },
+          error: (logoutErr) => {
+            console.error('[Sidebar] Logout failed:', logoutErr);
+            alert('Something went wrong during logout. Please try again.');
+          }
+        });
+      }
     });
   }
 }
