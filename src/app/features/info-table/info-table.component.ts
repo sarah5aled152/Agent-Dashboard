@@ -12,7 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   styleUrl: './info-table.component.css',
 })
 export class InfoTableComponent implements OnInit {
-  @Input() userAccessToken: string = '';
+  @Input() userId: string = '';
   user: any = {};
   isLoading = true;
   error: string | null = null;
@@ -26,7 +26,7 @@ export class InfoTableComponent implements OnInit {
   ngOnInit(): void {
     // this.userAccessToken = this.route.snapshot.paramMap.get('token') || '';
     // console.log('Token from route:', this.userAccessToken);
-    if (this.userAccessToken) {
+    if (this.userId) {
       this.loadCustomerData();
     } else {
       this.error = 'Invalid customer token.';
@@ -35,7 +35,7 @@ export class InfoTableComponent implements OnInit {
     this.loadOrders()
   }
   loadCustomerData(): void {
-    this.customerProfileService.getCustomerProfile(this.userAccessToken).subscribe({
+    this.customerProfileService.getCustomerProfileById(this.userId).subscribe({
       next: (data) => {
         console.log('Customer data:', data);
         this.user = data.user;
@@ -50,7 +50,7 @@ export class InfoTableComponent implements OnInit {
     });
   }
   loadOrders(): void {
-    this.orderService.getUserOrders(this.userAccessToken).subscribe({
+    this.orderService.getUserOrdersById(this.userId).subscribe({
       next: (response)=>{
         console.log('User orders:', response);
         this.orders = response.data;
