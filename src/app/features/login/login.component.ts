@@ -4,6 +4,8 @@ import {
   FormGroup,
   Validators,
   ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -38,10 +40,9 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
-  hidePwd = true; // toggle for <mat-icon>
+  showPassword = false;
   error = '';
   loading = false;
-
   private sub?: Subscription;
 
   constructor(
@@ -50,8 +51,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      email: ['', [
+        Validators.required, 
+        Validators.email,
+        this.validateEmailDomain
+      ]],
+      password: ['', [Validators.required]], // Simplified password validation
     });
   }
 
@@ -84,5 +89,38 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+  }
+
+  // Add email domain validator
+  private validateEmailDomain(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) return null;
+
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+      return null;
+    }
+
+    const validDomains = [
+      'gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com',
+      'icloud.com', 'aol.com', 'protonmail.com'
+    ];
+
+    const domain = value.split('@')[1]?.toLowerCase();
+    if (!domain || !validDomains.some(validDomain => domain === validDomain)) {
+      return { invalidDomain: true };
+    }
+    return null;
+  }
+
+  // Add helper methods for validation messages
+  getEmailErrorMessage(): string {
+    const control = this.loginForm.get('email');
+    if (control?.errors) {
+      if (control.errors['required']) return 'Email is required';
+      if (control.errors['email']) return 'Please enter a valid email address';
+      if (control.errors['invalidDomain']) 
+        return 'Email must be from a valid domain (gmail.com, yahoo.com, etc.)';
+    }
+    return '';
   }
 }
