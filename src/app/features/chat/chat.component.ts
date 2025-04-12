@@ -50,12 +50,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   userInfo: any = null;
   lastOrders: any[] = [];
-
   chatStatusOptions: any = [
     { value: 'pending', label: 'Pending', colorClass: 'bg-yellow-500' },
     { value: 'resolved', label: 'Resolved', colorClass: 'bg-red-500' },
   ];
-  
 
   private subs: Subscription[] = [];
 
@@ -68,7 +66,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchExistingChats();
-    console.log("Customer ID at init:", this.customerId);
+    console.log('Customer ID at init:', this.customerId);
     this.subs.push(
       this.chatService.customerId$.subscribe((id) => {
         this.customerId = id;
@@ -103,13 +101,13 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     const url = 'http://localhost:3000/chats/agent';
     const token = localStorage.getItem('token') ?? '';
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-  
+
     this.http.get<any[]>(url, { headers }).subscribe({
       next: (chats) => {
         console.log('[Agent] existing chats →', chats);
         console.log('Customer ID:', chats[0].customer);
         localStorage.setItem('customerId', chats[0].customer);
-        
+
         if (Array.isArray(chats) && chats.length > 0) {
           const firstChat = chats[0];
           this.customerId = firstChat.customer;
@@ -145,12 +143,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.http.get<any>(url).subscribe({
       next: (response) => {
         console.log('[Agent] User orders:', response);
-        this.lastOrders = response.data
-          .slice(0, 3)
-          .map((order: any) => ({
-            id: order._id,
-            status: order.orderStatus,
-          }));
+        this.lastOrders = response.data.slice(0, 3).map((order: any) => ({
+          id: order._id,
+          status: order.orderStatus,
+        }));
       },
       error: (err) => {
         console.error('[Agent] Failed to fetch orders:', err);
