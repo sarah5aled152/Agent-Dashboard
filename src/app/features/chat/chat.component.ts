@@ -46,7 +46,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   currentChatStatus: any;
 
   userId = localStorage.getItem('userId') ?? 'agent';
-  customerId: any = null;
+  customerId: string | null = null;
+
+  userInfo: any = null;
+  lastOrders: any[] = [];
   chatStatusOptions: any = [
     { value: 'pending', label: 'Pending', colorClass: 'bg-yellow-500' },
     { value: 'resolved', label: 'Resolved', colorClass: 'bg-red-500' },
@@ -63,6 +66,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchExistingChats();
+    console.log('Customer ID at init:', this.customerId);
     this.subs.push(
       this.chatService.customerId$.subscribe((id) => {
         this.customerId = id;
@@ -101,13 +105,52 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.http.get<any[]>(url, { headers }).subscribe({
       next: (chats) => {
         console.log('[Agent] existing chats →', chats);
+        console.log('Customer ID:', chats[0].customer);
+        localStorage.setItem('customerId', chats[0].customer);
+
         if (Array.isArray(chats) && chats.length > 0) {
-          const firstChatId = chats[0].id;
+          const firstChat = chats[0];
+          this.customerId = firstChat.customer;
+          const firstChatId = firstChat.id;
           this.chatService.selectChat(firstChatId);
+
+          this.fetchUserInfo(firstChat.customer);
+          this.fetchUserOrders(firstChat.customer);
         }
       },
       error: (err) => {
         console.error('[Agent] /chats/agent error', err);
+      },
+    });
+  }
+
+  private fetchUserInfo(customerId: string): void {
+    const url = `https://e-commerce-api-tau-five.vercel.app/profile/${customerId}`;
+    this.http.get<any>(url).subscribe({
+      next: (response) => {
+        console.log('[Agent] User info:', response);
+        this.userInfo = response.user;
+      },
+      error: (err) => {
+        console.error('[Agent] Failed to fetch user info:', err);
+        this.userInfo = null;
+      },
+    });
+  }
+
+  private fetchUserOrders(customerId: string): void {
+    const url = `https://e-commerce-api-tau-five.vercel.app/order/my-orders/${customerId}`;
+    this.http.get<any>(url).subscribe({
+      next: (response) => {
+        console.log('[Agent] User orders:', response);
+        this.lastOrders = response.data.slice(0, 3).map((order: any) => ({
+          id: order._id,
+          status: order.orderStatus,
+        }));
+      },
+      error: (err) => {
+        console.error('[Agent] Failed to fetch orders:', err);
+        this.lastOrders = [];
       },
     });
   }
