@@ -8,7 +8,6 @@ export class AuthGuard implements CanActivate {
 
   canActivate(): boolean {
     if (this.auth.isLoggedIn) {
-      // 👈 no parentheses
       return true;
     }
 

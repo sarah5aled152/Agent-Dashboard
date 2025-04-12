@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, tap, finalize } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 
 interface JwtPayload {
@@ -13,27 +13,19 @@ interface JwtPayload {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  /** ------------------------------------------------------------------
-   *  CONFIG
-   *  ------------------------------------------------------------------ */
-  private readonly apiBaseUrl = 'http://localhost:3000'; // 👈 no environment file
+ 
+  private readonly apiBaseUrl = 'http://localhost:3000'; 
 
-  /** ------------------------------------------------------------------
-   *  STATE
-   *  ------------------------------------------------------------------ */
+ 
   private readonly tokenSubject = new BehaviorSubject<string | null>(
     localStorage.getItem('token')
   );
   readonly token$ = this.tokenSubject.asObservable();
 
-  /** ------------------------------------------------------------------
-   *  CTOR
-   *  ------------------------------------------------------------------ */
+ 
   constructor(private http: HttpClient, private router: Router) {}
 
-  /** ------------------------------------------------------------------
-   *  TOKEN HELPERS
-   *  ------------------------------------------------------------------ */
+
   private setToken(token: string): void {
     this.tokenSubject.next(token);
     localStorage.setItem('token', token);
@@ -48,6 +40,7 @@ export class AuthService {
     this.tokenSubject.next(null);
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
+    localStorage.removeItem('userEmail');
   }
 
   get token(): string | null {
@@ -66,9 +59,7 @@ export class AuthService {
     }
   }
 
-  /** ------------------------------------------------------------------
-   *  AUTH CALLS
-   *  ------------------------------------------------------------------ */
+
   login(email: string, password: string): Observable<void> {
     return this.http
       .post<{ token: string }>(`${this.apiBaseUrl}/auth/login`, {
@@ -102,16 +93,56 @@ export class AuthService {
       );
   }
 
-  logout(): void {
-    this.clearToken();
-    this.router.navigateByUrl('/');
+  logout(): Observable<void> {
+    return new Observable<void>(observer => {
+      try {
+        this.clearToken();
+        this.router.navigateByUrl('/').then(
+          () => observer.complete(),
+          error => observer.error(error)
+        );
+      } catch (error) {
+        observer.error(error);
+      }
+    }).pipe(
+      finalize(() => {
+        // Ensure cleanup happens even if navigation fails
+        this.tokenSubject.next(null);
+      })
+    );
   }
 
-  /** ------------------------------------------------------------------
-   *  ERROR HANDLER
-   *  ------------------------------------------------------------------ */
-  private handleError = (error: HttpErrorResponse) => {
-    console.error('[AuthService] error:', error);
-    return throwError(() => error);
+
+  private handleError = (error: HttpErrorResponse): Observable<never> => {
+    let errorMessage: string;
+
+    if (error.error instanceof ErrorEvent) {
+      // Client-side error
+      errorMessage = `Client Error: ${error.error.message}`;
+    } else {
+      // Server-side error
+      errorMessage = `Server Error: ${error.status}\nMessage: ${error.message}`;
+      
+      // Handle specific HTTP status codes
+      switch (error.status) {
+        case 401:
+          this.clearToken();
+          this.router.navigateByUrl('/login');
+          errorMessage = 'Session expired. Please login again.';
+          break;
+        case 403:
+          errorMessage = 'Access denied. Insufficient permissions.';
+          break;
+        case 404:
+          errorMessage = 'Resource not found.';
+          break;
+        case 500:
+          errorMessage = 'Internal server error. Please try again later.';
+          break;
+      }
+    }
+
+    console.error('[AuthService]', errorMessage, error);
+    return throwError(() => new Error(errorMessage));
   };
 }

@@ -6,7 +6,6 @@
   </div>
 </div> -->
 
-
 <!-- 
   Make the outer container a flex container that fills
   the screen height, with a light background and some padding.
@@ -16,13 +15,16 @@
 <div class="min-h-screen bg-gray-100">
   <div class="flex flex-row">
     <!-- Sidebar -->
-    <app-agent-sidebar class="w-[250px] fixed bg-white shadow-md"></app-agent-sidebar>
+    <app-agent-sidebar
+      class="w-[250px] fixed bg-white shadow-md"
+    ></app-agent-sidebar>
 
     <!-- Main content area -->
-    <div class="flex-1 p-6 ml-[250px] ">
+    <div class="flex-1 p-6 ml-[250px]">
       <app-profile></app-profile>
       <app-edit-profile></app-edit-profile>
       <app-security></app-security>
+     
     </div>
   </div>
 </div>
