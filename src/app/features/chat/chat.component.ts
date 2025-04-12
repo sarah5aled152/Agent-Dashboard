@@ -1,226 +1,155 @@
-import {
-  Component,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-  OnInit,
-  OnDestroy,
-} from '@angular/core';
-import { Subscription } from 'rxjs';
-import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { NgClass, TitleCasePipe } from '@angular/common';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { NgClass, TitleCasePipe } from '@angular/common';
 import { ChatService } from '../../services/chat/chat.service';
-import { AgentStatusService } from '../../services/agent-status/agent-status.service';
-import { AgentSidebarComponent } from '../sidebar/agent-sidebar/agent-sidebar.component';
-import { EmptyComponent } from '../empty/empty.component';
-import { DatePipe } from '@angular/common';
+import { AgentSidebarComponent } from "../sidebar/agent-sidebar/agent-sidebar.component";
+
+export interface messageType {
+  id?: string;
+  chatId: string;
+  receiverId?: string;
+  senderId: string;
+  content: string;
+  from?: 'client' | 'agent';
+  createdAt?: Date;
+}
+
+interface ChatStatusOption {
+  value: 'open' | 'pending' | 'closed';
+  label: string;
+  colorClass: string;
+}
 
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [
-    FormsModule,
-    NgClass,
-    TitleCasePipe,
-    AgentSidebarComponent,
-    EmptyComponent,
-    DatePipe,
-  ],
+  imports: [FormsModule, NgClass, TitleCasePipe, AgentSidebarComponent],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
-export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ChatComponent implements AfterViewInit {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
+  // Dropdown toggles
+  showAgentStatusDropdown = false;
   showChatStatusDropdown = false;
-  busy = false;
 
-  messages: any[] = [];
-  chatId: string | null = null;
+  // Messages array
+  messages: messageType[] = [];
+
+  // For input
   message = '';
   messageValid = false;
 
-  currentChatStatus: any;
+  // Agent & Chat statuses
+  agentStatus: 'online' | 'offline' = 'online';
+  currentChatStatus: 'open' | 'pending' | 'closed' = 'open';
 
-  userId = localStorage.getItem('userId') ?? 'agent';
+  // IDs
+  chatId = '67e388a3698cf44ae3924e43';
+  userId = localStorage.getItem('userId') || 'agent';
 
-  chatStatusOptions: any = [
+  // Chat status dropdown options
+  chatStatusOptions: ChatStatusOption[] = [
+    { value: 'open', label: 'Open', colorClass: 'bg-green-500' },
     { value: 'pending', label: 'Pending', colorClass: 'bg-yellow-500' },
-    { value: 'resolved', label: 'Resolved', colorClass: 'bg-red-500' },
+    { value: 'closed', label: 'Closed', colorClass: 'bg-red-500' },
   ];
+  constructor(private http: HttpClient, private chatService: ChatService, private router: Router) {}
+  
 
-  private subs: Subscription[] = [];
+  ngOnInit() {
+    // 1) Join the chat room FIRST
+    this.chatService.joinChat(this.chatId);
 
-  constructor(
-    private http: HttpClient,
-    private chatService: ChatService,
-    private agentStatusService: AgentStatusService,
-    private router: Router
-  ) {}
+    // 2) Subscribe to live socket messages
+    this.chatService.getMessagesStream().subscribe((msgs) => {
+      this.messages = msgs as messageType[];
+      // Auto-scroll on new messages
+      setTimeout(() => this.scrollToBottom(), 100);
+    });
 
-  ngOnInit(): void {
-    this.fetchExistingChats();
-
-    this.subs.push(
-      this.chatService.chatId$.subscribe((id) => {
-        this.chatId = id;
-        this.busy = !!id;
-        if (id) this.fetchHistory(id);
-      })
-    );
-
-    this.subs.push(
-      this.chatService.messages$.subscribe((msgs) => {
-        console.log('[Agent] messages$ stream →', msgs);
-        this.messages = msgs;
-        setTimeout(() => this.scrollToBottom(), 50);
-      })
-    );
+    // 3) Fetch the existing conversation from your API
+    this.getMessages();
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
+    // Scroll to bottom on component init
     setTimeout(() => this.scrollToBottom(), 300);
   }
 
-  ngOnDestroy(): void {
-    this.subs.forEach((s) => s.unsubscribe());
-  }
-
-  private fetchExistingChats(): void {
-    const url = 'http://localhost:3000/chats/agent';
-    const token = localStorage.getItem('token') ?? '';
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-
-    this.http.get<any[]>(url, { headers }).subscribe({
-      next: (chats) => {
-        console.log('[Agent] existing chats →', chats);
-        if (Array.isArray(chats) && chats.length > 0) {
-          const firstChatId = chats[0].id;
-          this.chatService.selectChat(firstChatId);
-        }
-      },
-      error: (err) => {
-        console.error('[Agent] /chats/agent error', err);
-      },
-    });
-  }
-
-  private fetchHistory(chatId: string): void {
-    const url = `http://localhost:3000/messages/agent/${chatId}`;
-    const token = localStorage.getItem('token') ?? '';
+  getMessages() {
+    const url = `http://localhost:3000/messages/agent/${this.chatId}`;
+    const token = localStorage.getItem('token') || '';
     const headers = { Authorization: `Bearer ${token}` };
 
-    this.http.get<any[]>(url, { headers }).subscribe((msgs) => {
-      console.log('[Agent] history:', msgs);
-      this.chatService.setInitialMessages(msgs);
+    this.http.get<messageType[]>(url, { headers }).subscribe((response) => {
+      console.log('[Agent] Fetched messages from BE:', response);
+      // Merge them with any new socket messages that arrived
+      this.chatService.setInitialMessages(response);
     });
   }
 
-  handleTyping(): void {
+  handleTyping() {
     this.messageValid = this.message.trim().length >= 2;
   }
 
-  handleSend(): void {
-    if (!this.messageValid || !this.chatId) return;
+  handleSend() {
+    if (!this.messageValid) return;
 
-    const content = this.message.trim();
-    const senderEmail =
-      localStorage.getItem('userEmail') ?? 'agent@example.com';
+    const newMessageContent = this.message.trim();
 
-    const localMessage = {
+    const localMessage: messageType = {
       id: 'temp-' + Date.now(),
       chatId: this.chatId,
-      senderId: {
-        _id: this.userId,
-        email: senderEmail,
-      },
-      senderRole: 'agent',
-      content,
+      senderId: this.userId,
+      content: newMessageContent,
       createdAt: new Date(),
     };
 
-    this.messages.push(localMessage);
-    this.chatService.sendMessage(content, this.userId);
+    this.chatService.pushLocalMessage(localMessage);
+
+    this.chatService.sendMessage(this.chatId, newMessageContent, this.userId);
+
     this.message = '';
     this.messageValid = false;
-
-    setTimeout(() => this.scrollToBottom(), 100);
   }
 
-  private scrollToBottom(): void {
+  scrollToBottom(): void {
     if (!this.scrollContainer) return;
     try {
-      const el = this.scrollContainer.nativeElement;
-      el.scrollTop = el.scrollHeight;
+      this.scrollContainer.nativeElement.scrollTop =
+        this.scrollContainer.nativeElement.scrollHeight;
     } catch (err) {
-      console.error('[Agent] scroll error:', err);
+      console.error('Scroll error:', err);
     }
   }
 
-  private updateChatStatus(status: string): void {
-    const token = localStorage.getItem('token') ?? '';
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    const url = `http://localhost:3000/chats/agent/${this.chatId}/${status}`;
-
-    this.http.put(url, {}, { headers }).subscribe({
-      next: () => {
-        console.log('[Agent] Chat status updated to:', status);
-        this.checkForNextActiveChat();
-
-        // Refresh agent status after chat is resolved to reflect change in UI
-        this.agentStatusService.getStatus().subscribe();
-      },
-      error: (err) => {
-        console.error('[Agent] Failed to update status:', err);
-      },
-    });
+  // Agent status
+  handleChangeAgentStatus(status: 'online' | 'offline') {
+    if (confirm('Change your status to ' + status + '?')) {
+      this.agentStatus = status;
+      this.showAgentStatusDropdown = false;
+    }
   }
 
-  private checkForNextActiveChat(): void {
-    const url = 'http://localhost:3000/chats/agent';
-    const token = localStorage.getItem('token') ?? '';
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-
-    this.http.get<any[]>(url, { headers }).subscribe({
-      next: (chats) => {
-        if (Array.isArray(chats) && chats.length > 0) {
-          const nextChat = chats[0];
-          this.chatService.selectChat(nextChat.id);
-          this.fetchHistory(nextChat.id);
-          this.busy = true;
-        } else {
-          this.busy = false;
-          this.chatId = null;
-          this.messages = [];
-        }
-      },
-      error: (err) => {
-        console.error('[Agent] Failed to fetch next chat:', err);
-      },
-    });
-  }
-
-  handleChangeChatStatus(status: any): void {
-    if (!this.chatId) return;
-
-    if (confirm(`Change chat status to "${status}"?`)) {
+  // Chat status
+  handleChangeChatStatus(status: 'open' | 'pending' | 'closed') {
+    if (confirm('Change chat status to ' + status + '?')) {
       this.currentChatStatus = status;
       this.showChatStatusDropdown = false;
-      this.updateChatStatus(status);
     }
   }
 
   getCurrentStatusColor(): string {
     const status = this.chatStatusOptions.find(
-      (opt: any) => opt.value === this.currentChatStatus
+      (opt) => opt.value === this.currentChatStatus
     );
     return status ? status.colorClass : 'bg-gray-500';
   }
-
-  navigateToUserProfile(userAccessToken: string): void {
-    this.router.navigate(['/user-info', userAccessToken]);
+  navigateToUserProfile(userAccessToken:string) {
+    this.router.navigate(['/user-info',userAccessToken])
   }
 }

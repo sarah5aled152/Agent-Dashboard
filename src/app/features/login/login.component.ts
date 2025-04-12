@@ -1,23 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
-
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
-
-/* Angular‑Material & common imports … */
-import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -26,63 +17,55 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    /* material modules */ MatCardModule,
+    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatIconModule,
+    MatIconModule
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class LoginComponent {
   loginForm: FormGroup;
-  hidePwd = true; // toggle for <mat-icon>
   error = '';
   loading = false;
 
-  private sub?: Subscription;
-
   constructor(
     private fb: FormBuilder,
-    private auth: AuthService,
+    private authService: AuthService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  ngOnInit(): void {
-    if (this.auth.isLoggedIn) {
-      this.router.navigateByUrl('/chat');
-    }
-  }
-
-  onSubmit(): void {
+  onSubmit() {
     if (this.loginForm.invalid) return;
 
     this.loading = true;
     this.error = '';
 
     const { email, password } = this.loginForm.value;
-
-    this.sub = this.auth.login(email, password).subscribe({
-      next: () => {
+    this.authService.login(email, password).subscribe({
+      next: (response) => {
+        console.log(response);
+        
+        this.authService.saveUser(response.token);
+        this.router.navigate(['/chat']);
         this.loading = false;
-        this.router.navigateByUrl('/chat');
       },
       error: (err) => {
+        if (err.error && err.error.message) {
+          this.error = err.error.message;
+        } else {
+          this.error = 'Invalid email or password. Please try again!';
+        }
         this.loading = false;
-        this.error =
-          err?.error?.message ?? 'Invalid email or password. Please try again!';
-      },
+      }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
   }
 }
