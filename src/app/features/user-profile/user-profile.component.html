@@ -1,15 +1,9 @@
-<!-- <div class="flex min-h-screen bg-red-600">
-    <app-clientsidebar [userAccessToken]="token" class=" w-[300px] me-2 h-full"></app-clientsidebar>
-    <app-info-table [userAccessToken]="token" class="flex-1 min-h-screen"></app-info-table>
-</div> -->
 <div class="flex bg-gray-200">
-    <!-- Sidebar with sticky behavior -->
-    <div class="sticky top-0 h-screen w-[300px]">
-      <app-clientsidebar [userAccessToken]="token"></app-clientsidebar>
-    </div>
-    
-    <!-- Content area -->
-    <app-info-table [userAccessToken]="token" class="flex-1 min-h-screen"></app-info-table>
+  <!-- Sidebar with sticky behavior -->
+  <div class="sticky top-0 h-screen w-[300px]">
+    <app-agent-sidebar class="w-[250px] fixed bg-white shadow-md"></app-agent-sidebar>
   </div>
 
-
+  <!-- Content area -->
+  <app-info-table [userAccessToken]="token" class="flex-1 min-h-screen"></app-info-table>
+</div>
