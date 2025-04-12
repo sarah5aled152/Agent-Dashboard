@@ -15,7 +15,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  
+
   // Protected routes inside layout
   {
     path: '',
@@ -33,11 +33,6 @@ export const routes: Routes = [
       {
         path: 'settings',
         component: SettingComponent,
-        children: [
-          { path: '', redirectTo: 'profile', pathMatch: 'full' },
-          { path: 'profile', component: ProfileComponent },
-          { path: 'security', component: SecurityComponent }
-        ]
       },
       {
         path: 'chat',
