@@ -1,39 +1,49 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './features/login/login.component';
 import { RegisterComponent } from './features/register/register.component';
-// import { HomeComponent } from './features/home/home.component';
 import { AuthGuard } from './core/auth.guard';
 import { UserProfileComponent } from './features/user-profile/user-profile.component';
 import { ChatComponent } from './features/chat/chat.component';
 import { TicketsPageComponent } from './features/tickets-page/tickets-page.component';
 import { SettingComponent } from './features/settings/setting/setting.component';
-import { ProfileComponent } from './features/settings/profile/profile.component';
-import { SecurityComponent } from './features/settings/security/security.component';
 import { LayoutComponent } from './layout/layout/layout.component';
-// import { NavbarComponent } from './features/navbar/navbar.component';
+import { ProfileComponent } from './features/settings/profile/profile.component'; // Added missing import
+import { SecurityComponent } from './features/settings/security/security.component'; // Added missing import
 
 export const routes: Routes = [
-  { 
-    path: '', 
-    component: LayoutComponent, 
+  // Public routes
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  
+  // Protected routes inside layout
+  {
+    path: '',
+    component: LayoutComponent,
+    canActivate: [AuthGuard],
     children: [
-      { path: '', redirectTo: 'login', pathMatch: 'full' }, // Default child route
-      { path: 'login', component: LoginComponent },
-      { path: 'register', component: RegisterComponent },
-      { path: 'user-info/:token', component: UserProfileComponent, canActivate: [AuthGuard] },
-      { path: 'tickets', component: TicketsPageComponent, canActivate: [AuthGuard] },
-      { 
-        path: 'settings', 
-        component: SettingComponent, 
-        canActivate: [AuthGuard],
+      {
+        path: 'user-info/:token',
+        component: UserProfileComponent,
+      },
+      {
+        path: 'tickets',
+        component: TicketsPageComponent,
+      },
+      {
+        path: 'settings',
+        component: SettingComponent,
         children: [
-          { path: '', redirectTo: 'profile', pathMatch: 'full' }, // Default child route for settings
-          { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
-          { path: 'security', component: SecurityComponent, canActivate: [AuthGuard] } // Added AuthGuard
+          { path: '', redirectTo: 'profile', pathMatch: 'full' },
+          { path: 'profile', component: ProfileComponent },
+          { path: 'security', component: SecurityComponent }
         ]
       },
-      { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] }
-    ]
+      {
+        path: 'chat',
+        component: ChatComponent,
+      },
+    ],
   },
-  { path: '**', redirectTo: '' } // Moved wildcard route to the root level
+  { path: '**', redirectTo: 'login' },
 ];
