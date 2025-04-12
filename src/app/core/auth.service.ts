@@ -86,14 +86,14 @@ export class AuthService {
     name: string,
     email: string,
     password: string,
-    confirmPassword: string
+    confirmedPassword: string
   ): Observable<void> {
     return this.http
       .post<{ token: string }>(`${this.apiBaseUrl}/auth/register`, {
         name,
         email,
         password,
-        confirmPassword,
+        confirmedPassword,
       })
       .pipe(
         tap((res) => this.setToken(res.token)),

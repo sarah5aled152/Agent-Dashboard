@@ -7,7 +7,8 @@ import { AgentStatusService } from '../agent-status/agent-status.service';
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   private socket: Socket;
-
+  private customerIdSubject = new BehaviorSubject<string | null>(null);
+  readonly customerId$ = this.customerIdSubject.asObservable();
   private readonly chatIdSubject = new BehaviorSubject<string | null>(null);
   readonly chatId$ = this.chatIdSubject.asObservable();
 
@@ -36,11 +37,11 @@ export class ChatService {
   }
 
   private listenForEvents(): void {
-    this.socket.on('chatCreated', (chatId: any) => {
-      console.log('[Agent] chatCreated →', chatId);
-      this.socket.emit('joinChat', { chatId, userType: 'agent' });
-      this.chatIdSubject.next(chatId);
-
+    this.socket.on('chatCreated', (chat: any) => {
+      console.log('[Agent] chatCreated →', chat);
+      this.socket.emit('joinChat', { chatId: chat._id, userType: 'agent' });
+      this.customerIdSubject.next(chat.customerId);
+      this.chatIdSubject.next(chat._id);
       this.agentStatusService.refreshStatusFromServer(); // 👈 refresh status
     });
 
