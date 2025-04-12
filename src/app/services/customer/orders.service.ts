@@ -34,13 +34,15 @@ export class OrdersService {
   private apiUrl = 'https://e-commerce-api-tau-five.vercel.app/order/my-orders'
 
   constructor(private http : HttpClient) { }
-  getUserOrdersById(id:string): Observable<OrdersResponse>{
+  getUserOrders(userAccessToken:string): Observable<OrdersResponse>{
     // const userAccessToken = localStorage.getItem('accesstoken') || ''
-    if (!id) {
-      console.error('No id provided');
+    if (!userAccessToken) {
+      console.error('No access token provided');
     }
-    const url = `${this.apiUrl}/${id}`;
-    return this.http.get<OrdersResponse>(url).pipe(
+    const headers = new HttpHeaders({
+      accesstoken: `accesstoken_${userAccessToken}`,
+    });
+    return this.http.get<OrdersResponse>(this.apiUrl, { headers }).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Error fetching user orders:', error);
         const errorMessage = error.error?.message || error.statusText || 'Unknown error';

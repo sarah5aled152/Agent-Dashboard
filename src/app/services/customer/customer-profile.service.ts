@@ -9,16 +9,18 @@ export class CustomerProfileService {
   private apiUrl = 'https://e-commerce-api-tau-five.vercel.app/profile';
   constructor(private http: HttpClient) {}
 
-  getCustomerProfileById(id: string): Observable<any> {
+  getCustomerProfile(userAccessToken: string): Observable<any> {
     // console.log('token being sent:', userAccessToken);
-    if (!id) {
-      console.error('No id provided');
+    if (!userAccessToken) {
+      console.error('No access token provided');
     }
-  const url = `${this.apiUrl}/${id}`;
+    const headers = new HttpHeaders({
+      accesstoken: `accesstoken_${userAccessToken}`,
+    });
     // console.log('Making request to:', this.apiUrl);
     // console.log('With headers:', headers);
 
-    return this.http.get(url).pipe(
+    return this.http.get(this.apiUrl, { headers }).pipe(
       catchError((error) => {
         console.error('Error fetching customer profile:', error);
         throw error;
