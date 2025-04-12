@@ -1,5 +1,5 @@
 <div
-  class="h-screen bg-gradient-to-b from-blue-600 to-indigo-500 text-white w-[300px] p-6 flex flex-col"
+  class="min-h-screen bg-gradient-to-b from-blue-600 to-indigo-500 text-white p-6 flex flex-col"
 >
   <div class="flex items-center mb-8">
     <div class="w-12 h-12 bg-gray-300 rounded-full mr-4"></div>
@@ -13,9 +13,47 @@
     <ul>
       <li class="mb-4">
         <a
+          routerLink="/chat"
+          routerLinkActive="bg-gray-100 text-indigo-500"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center p-3 rounded-lg w-48 hover:text-indigo-500 hover:bg-gray-100 hover:bg-opacity-10 transition cursor-pointer"
+        >
+          <svg
+          class="w-6 h-6 mr-3 group-hover:text-indigo-500 transition-colors"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M17 3.33782C15.5291 2.48697 13.8214 2 12 2C6.47715 2 2 6.47715 2 12C2 13.5997 2.37562 15.1116 3.04346 16.4525C3.22094 16.8088 3.28001 17.2161 3.17712 17.6006L2.58151 19.8267C2.32295 20.793 3.20701 21.677 4.17335 21.4185L6.39939 20.8229C6.78393 20.72 7.19121 20.7791 7.54753 20.9565C8.88837 21.6244 10.4003 22 12 22C17.5228 22 22 17.5228 22 12C22 10.1786 21.513 8.47087 20.6622 7"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              ></path>
+              <path
+                d="M8 12H8.009M11.991 12H12M15.991 12H16"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <span>Current Chat</span>
+        </a>
+      </li>
+      <li class="mb-4">
+        <a
           routerLink="/tickets"
           routerLinkActive="bg-gray-100 text-indigo-500"
-          [routerLinkActiveOptions]="{exact: true}"
+          [routerLinkActiveOptions]="{ exact: true }"
           class="flex items-center p-3 rounded-lg w-48 hover:text-indigo-500 hover:bg-gray-100 hover:bg-opacity-10 transition cursor-pointer"
         >
           <svg
@@ -89,10 +127,10 @@
       </li>
       <li class="mb-4">
         <a
-        routerLink="/settings"
-        routerLinkActive="bg-gray-100 text-indigo-500"
-        [routerLinkActiveOptions]="{exact: true}"
-        class="flex items-center p-3 rounded-lg w-48 hover:text-indigo-500 hover:bg-gray-100 hover:bg-opacity-10 transition cursor-pointer"
+          routerLink="/settings"
+          routerLinkActive="bg-gray-100 text-indigo-500"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center p-3 rounded-lg w-48 hover:text-indigo-500 hover:bg-gray-100 hover:bg-opacity-10 transition cursor-pointer"
         >
           <svg
             class="h-6 w-6 mr-3 group-hover:text-indigo-500 transition-colors"
@@ -125,11 +163,69 @@
         </a>
       </li>
       <li>
-<button class="flex items-center cursor-pointer p-3  w-48 rounded-lg " (click)="logout()">
-  <svg class="h-6 w-6 mr-3 " viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M21 12L13 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M18 15L20.913 12.087V12.087C20.961 12.039 20.961 11.961 20.913 11.913V11.913L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M16 5V4.5V4.5C16 3.67157 15.3284 3 14.5 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H14.5C15.3284 21 16 20.3284 16 19.5V19.5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-  Logout
-</button>
+        <button
+        class="flex items-center p-3 rounded-lg w-48 hover:text-indigo-500 hover:bg-gray-100 hover:bg-opacity-10 transition cursor-pointer"
+          (click)="logout()"
+        >
+          <svg
+          class="w-6 h-6 mr-3 group-hover:text-indigo-500 transition-colors"
+            class="h-6 w-6 mr-3"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M21 12L13 12"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+              <path
+                d="M18 15L20.913 12.087V12.087C20.961 12.039 20.961 11.961 20.913 11.913V11.913L18 9"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+              <path
+                d="M16 5V4.5V4.5C16 3.67157 15.3284 3 14.5 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H14.5C15.3284 21 16 20.3284 16 19.5V19.5V19"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </g>
+          </svg>
+          Logout
+        </button>
       </li>
     </ul>
+
+    <div class="mb-6">
+      <label
+        for="agent-status"
+        class="block text-sm font-medium text-white mb-2"
+      >
+        Agent Status
+      </label>
+      <select
+        id="agent-status"
+        [(ngModel)]="agentStatus"
+        (change)="handleChangeAgentStatus(agentStatus)"
+        class="w-full px-4 py-2 rounded-xl border border-white text-sm text-indigo-900 bg-white shadow focus:ring-2 focus:ring-indigo-400 focus:outline-none transition-all duration-200"
+      >
+        <option value="away">Away</option>
+        <option value="busy">Busy</option>
+        <option value="available">Available</option>
+      </select>
+    </div>
   </aside>
 </div>
