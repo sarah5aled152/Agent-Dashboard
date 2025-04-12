@@ -1,181 +1,285 @@
 <div class="flex h-screen">
-  <app-agent-sidebar class="w-[250px]"></app-agent-sidebar>
-  <div class="flex flex-1 overflow-hidden bg-gradient-to-br from-gray-200 via-indigo-50 to-gray-300">
-    @if (!busy) {
-    <app-empty></app-empty>
-    }@else {
+  <!-- <app-agent-sidebar class="w-[250px]"></app-agent-sidebar> -->
+  <div
+  class="flex flex-1 overflow-hidden bg-gradient-to-br from-gray-200 via-indigo-50 to-gray-300"
+>
+  <!-- Chat Main Area -->
+  <div class="flex-1 flex flex-col">
+    <!-- Header -->
+    <div
+      class="bg-gradient-to-r from-blue-600 to-indigo-500 text-white p-4 shadow-md flex items-center gap-2"
+    >
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+        ></path>
+      </svg>
+      <h4 class="text-lg font-semibold m-0 tracking-wide">
+        Client's Name --
+        <a href="#" class="text-indigo-200 hover:text-white transition"
+          >Profile Link</a
+        >
+      </h4>
+    </div>
 
-    <!-- Chat Main Area -->
-    <div class="flex-1 flex flex-col">
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-500 text-white p-4 shadow-md flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-        </svg>
-        <h4 class="text-lg font-semibold m-0 tracking-wide">
-          Client's Name --
-          <a href="#" class="text-indigo-200 hover:text-white transition">Profile Link</a>
-        </h4>
-      </div>
-
-      <!-- Chat Messages -->
-      <!-- Chat Messages -->
-      <div class="flex-grow overflow-auto p-6 bg-gray-100" #scrollContainer>
-        <div class="flex flex-col gap-4">
-          @for (message of messages; track message.id) {
-          <div class="flex" [class.justify-end]="message.senderRole === 'agent'">
-            <div class="rounded-xl p-4 shadow-md max-w-[60%] transition-all duration-200"
-              [class.bg-gradient-to-r]="message.senderRole === 'agent'"
-              [class.from-blue-600]="message.senderRole === 'agent'"
-              [class.to-indigo-500]="message.senderRole === 'agent'" [class.text-white]="message.senderRole === 'agent'"
-              [class.bg-white]="message.senderRole !== 'agent'" [class.border]="message.senderRole !== 'agent'"
-              [class.border-gray-300]="message.senderRole !== 'agent'">
-              <!-- Sender Email -->
-              <small class="block mb-1 font-semibold text-sm" [class.text-white]="message.senderRole === 'agent'"
-                [class.text-gray-800]="message.senderRole !== 'agent'">
-                {{ message.senderRole === 'agent' ? message.senderId?.email : message.senderId?.email }}
-              </small>
-
-              <!-- Message Content -->
-              <div class="text-sm leading-snug mb-1">
-                {{ message.content }}
-              </div>
-
-              <!-- Message Timestamp -->
-              <div class="text-xs opacity-70 mt-1" [class.text-white]="message.senderRole === 'agent'"
-                [class.text-gray-500]="message.senderRole !== 'agent'">
-                {{ message.createdAt | date: 'short' }}
-              </div>
-            </div>
+    <!-- Chat Messages -->
+    <div class="flex-grow overflow-auto p-6 bg-gray-100" #scrollContainer>
+      <div class="flex flex-col gap-4">
+        @for (message of messages; track message.id) {
+        <div class="flex" [class.justify-end]="message.senderId === userId">
+          <div
+            class="rounded-xl p-4 shadow-md max-w-[60%] transition-all duration-200"
+            [class.bg-gradient-to-r]="message.senderId === userId"
+            [class.from-blue-600]="message.senderId === userId"
+            [class.to-indigo-500]="message.senderId === userId"
+            [class.text-white]="message.senderId === userId"
+            [class.bg-gray-50]="message.senderId !== userId"
+            [class.border]="message.senderId !== userId"
+            [class.border-gray-300]="message.senderId !== userId"
+            [class.hover:shadow-lg]="true"
+          >
+            <small class="font-medium block opacity-80">{{
+              message.senderId
+            }}</small>
+            <span class="text-sm">{{ message.content }}</span>
           </div>
-          }
         </div>
+        }
       </div>
+    </div>
 
+    <!-- Chat Input + Status Dropdown -->
+    <div class="p-6 bg-white shadow-inner">
+      <div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+          <!-- Message Input -->
+          <div class="md:col-span-10">
+            <label for="chat-message" class="sr-only">Message</label>
+            <textarea
+              id="chat-message"
+              class="w-full border border-gray-200 rounded-xl shadow-sm p-4 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm placeholder-gray-400 transition-all duration-200 hover:border-indigo-300 bg-gray-50"
+              placeholder="Type your message..."
+              rows="4"
+              style="resize: none"
+              (input)="handleTyping()"
+              [(ngModel)]="message"
+            ></textarea>
+          </div>
 
+          <!-- Send + Status -->
+          <div class="md:col-span-2 flex flex-col gap-4">
+            <button
+              class="w-full shadow-md bg-gradient-to-r from-blue-600 to-indigo-500 hover:from-indigo-600 hover:to-blue-700 text-white px-4 py-2 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
+              (click)="handleSend()"
+              type="button"
+              [disabled]="!messageValid"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                ></path>
+              </svg>
+              Send
+            </button>
 
-      <!-- Chat Input + Status Dropdown -->
-      <div class="p-6 bg-white shadow-inner">
-        <div>
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-            <!-- Message Input -->
-            <div class="md:col-span-10">
-              <label for="chat-message" class="sr-only">Message</label>
-              <textarea id="chat-message"
-                class="w-full border border-gray-200 rounded-xl shadow-sm p-4 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm placeholder-gray-400 transition-all duration-200 hover:border-indigo-300 bg-gray-50"
-                placeholder="Type your message..." rows="4" style="resize: none" (input)="handleTyping()"
-                [(ngModel)]="message"></textarea>
-            </div>
-
-            <!-- Send + Status -->
-            <div class="md:col-span-2 flex flex-col gap-4">
+            <!-- Chat Status Dropdown -->
+            <div class="relative">
               <button
-                class="w-full shadow-md bg-gradient-to-r from-blue-600 to-indigo-500 hover:from-indigo-600 hover:to-blue-700 text-white px-4 py-2 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
-                (click)="handleSend()" type="button" [disabled]="!messageValid">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                </svg>
-                Send
+                class="border border-gray-200 rounded-xl px-4 py-2 text-sm bg-white hover:bg-gray-50 w-full shadow-sm flex items-center justify-between transition-all duration-200"
+                type="button"
+                (click)="showChatStatusDropdown = !showChatStatusDropdown"
+              >
+                <span class="font-medium">{{
+                  currentChatStatus | titlecase
+                }}</span>
+                <span
+                  [ngClass]="getCurrentStatusColor()"
+                  class="rounded-full ml-2 w-3 h-3 shadow-sm"
+                ></span>
               </button>
 
-              <!-- Chat Status Dropdown -->
-              <div class="relative">
-                <button
-                  class="border border-gray-200 rounded-xl px-4 py-2 text-sm bg-white hover:bg-gray-50 w-full shadow-sm flex items-center justify-between transition-all duration-200"
-                  type="button" (click)="showChatStatusDropdown = !showChatStatusDropdown">
-                  <span class="font-medium">{{
-                    currentChatStatus | titlecase
-                    }}</span>
-                  <span [ngClass]="getCurrentStatusColor()" class="rounded-full ml-2 w-3 h-3 shadow-sm"></span>
-                </button>
-
-                @if (showChatStatusDropdown) {
-                <ul
-                  class="absolute bottom-full mb-2 w-full bg-white border border-indigo-200 rounded-xl shadow-lg z-10 overflow-hidden">
-                  @for (status of chatStatusOptions; track status.value) {
-                  <li>
-                    <button
-                      class="w-full px-4 py-2 text-sm hover:bg-indigo-100 text-indigo-700 text-left flex items-center justify-between transition-all duration-200"
-                      (click)="handleChangeChatStatus(status.value)">
-                      {{ status.label }}
-                      <span [ngClass]="status.colorClass"
-                        class="rounded-full inline-block ml-2 w-3 h-3 shadow-sm"></span>
-                    </button>
-                  </li>
-                  }
-                </ul>
+              @if (showChatStatusDropdown) {
+              <ul
+                class="absolute bottom-full mb-2 w-full bg-white border border-indigo-200 rounded-xl shadow-lg z-10 overflow-hidden"
+              >
+                @for (status of chatStatusOptions; track status.value) {
+                <li>
+                  <button
+                    class="w-full px-4 py-2 text-sm hover:bg-indigo-100 text-indigo-700 text-left flex items-center justify-between transition-all duration-200"
+                    (click)="handleChangeChatStatus(status.value)"
+                  >
+                    {{ status.label }}
+                    <span
+                      [ngClass]="status.colorClass"
+                      class="rounded-full inline-block ml-2 w-3 h-3 shadow-sm"
+                    ></span>
+                  </button>
+                </li>
                 }
-              </div>
+              </ul>
+              }
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Right Sidebar -->
-    <div class="bg-gradient-to-b from-white to-gray-50 p-6 w-[260px] shadow-lg overflow-y-scroll">
+  <!-- Right Sidebar -->
+  <div
+    class="bg-gradient-to-b from-white to-gray-50 p-6 w-[260px] shadow-lg"
+  >
+    <div class="relative mb-6">
+      <button
+        class="flex justify-between items-center border border-gray-200 rounded-xl px-4 py-2 text-sm bg-white hover:bg-gray-50 w-full transition-all duration-200 shadow-sm"
+        type="button"
+        (click)="showAgentStatusDropdown = !showAgentStatusDropdown"
+      >
+        <span class="font-medium">{{
+          agentStatus === "online" ? "Online" : "Offline"
+        }}</span>
+        <span
+          [ngClass]="{
+            'bg-green-500': agentStatus === 'online',
+            'bg-red-500': agentStatus === 'offline'
+          }"
+          class="rounded-full ml-2 w-3 h-3 shadow-sm"
+        ></span>
+      </button>
 
-      <!-- User Info Section -->
-      <div class="card mb-6 shadow-md bg-white rounded-xl border border-indigo-100 overflow-hidden">
-        <div class="card-header bg-gradient-to-r from-indigo-50 to-white border-b p-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-          <h6 class="text-sm font-semibold m-0 text-indigo-800 tracking-tight">
-            User Info
-          </h6>
-        </div>
-        <div class="card-body p-4 text-sm text-gray-700">
-          <div class="mb-3">
-            <strong class="font-medium text-indigo-900">Name:</strong> test
-          </div>
-          <div class="mb-3">
-            <strong class="font-medium text-indigo-900">Email:</strong> test.com
-          </div>
-          <div class="mb-3">
-            <strong class="font-medium text-indigo-900">Country:</strong> Egypt
-          </div>
-          <div>
-            <strong class="font-medium text-indigo-900">Status:</strong>
-            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">Active</span>
-          </div>
-        </div>
+      @if (showAgentStatusDropdown) {
+      <ul
+        class="absolute top-full mt-2 w-full bg-white border border-indigo-200 rounded-xl shadow-lg z-10 overflow-hidden"
+      >
+        <li>
+          <button
+            class="flex items-center justify-between w-full px-4 py-2 text-sm hover:bg-indigo-100 text-indigo-700 transition-all duration-200"
+            type="button"
+            (click)="handleChangeAgentStatus('offline')"
+          >
+            Offline
+            <span
+              class="ml-2 rounded-full bg-red-500 inline-block w-3 h-3 shadow-sm"
+            ></span>
+          </button>
+        </li>
+        <li>
+          <button
+            class="flex items-center justify-between w-full px-4 py-2 text-sm hover:bg-indigo-100 text-indigo-700 transition-all duration-200"
+            type="button"
+            (click)="handleChangeAgentStatus('online')"
+          >
+            Online
+            <span
+              class="ml-2 rounded-full bg-green-500 inline-block w-3 h-3 shadow-sm"
+            ></span>
+          </button>
+        </li>
+      </ul>
+      }
+    </div>
+    <!-- User Info Section -->
+    <div
+      class="card mb-6 shadow-md bg-white rounded-xl border border-indigo-100 overflow-hidden"
+    >
+      <div
+        class="card-header bg-gradient-to-r from-indigo-50 to-white border-b p-4 flex items-center gap-2"
+      >
+        <svg
+          class="w-4 h-4 text-indigo-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          ></path>
+        </svg>
+        <h6 class="text-sm font-semibold m-0 text-indigo-800 tracking-tight">
+          User Info
+        </h6>
       </div>
-
-      <!-- Last Orders Section -->
-      <div class="card shadow-md bg-white rounded-xl border border-indigo-100 overflow-hidden">
-        <div class="card-header bg-gradient-to-r from-indigo-50 to-white border-b p-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-            </path>
-          </svg>
-          <h6 class="text-sm font-semibold m-0 text-indigo-800 tracking-tight">
-            Last Orders
-          </h6>
+      <div class="card-body p-4 text-sm text-gray-700">
+        <div class="mb-3">
+          <strong class="font-medium text-indigo-900">Name:</strong> test
         </div>
-        <div class="card-body p-4 text-sm text-gray-700">
-          <ul class="divide-y divide-indigo-100">
-            <li class="py-3 flex justify-between items-center">
-              <span class="font-medium text-indigo-800">#12345</span>
-              <span class="text-green-600 font-medium">Completed</span>
-            </li>
-            <li class="py-3 flex justify-between items-center">
-              <span class="font-medium text-indigo-800">#67890</span>
-              <span class="text-yellow-500 font-medium">Pending</span>
-            </li>
-            <li class="py-3 flex justify-between items-center">
-              <span class="font-medium text-indigo-800">#11223</span>
-              <span class="text-blue-500 font-medium">Shipped</span>
-            </li>
-          </ul>
+        <div class="mb-3">
+          <strong class="font-medium text-indigo-900">Email:</strong> test.com
+        </div>
+        <div class="mb-3">
+          <strong class="font-medium text-indigo-900">Country:</strong> Egypt
+        </div>
+        <div>
+          <strong class="font-medium text-indigo-900">Status:</strong>
+          <span
+            class="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium"
+            >Active</span
+          >
         </div>
       </div>
     </div>
-    }
 
+    <!-- Last Orders Section -->
+    <div
+      class="card shadow-md bg-white rounded-xl border border-indigo-100 overflow-hidden"
+    >
+      <div
+        class="card-header bg-gradient-to-r from-indigo-50 to-white border-b p-4 flex items-center gap-2"
+      >
+        <svg
+          class="w-4 h-4 text-indigo-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+          ></path>
+        </svg>
+        <h6 class="text-sm font-semibold m-0 text-indigo-800 tracking-tight">
+          Last Orders
+        </h6>
+      </div>
+      <div class="card-body p-4 text-sm text-gray-700">
+        <ul class="divide-y divide-indigo-100">
+          <li class="py-3 flex justify-between items-center">
+            <span class="font-medium text-indigo-800">#12345</span>
+            <span class="text-green-600 font-medium">Completed</span>
+          </li>
+          <li class="py-3 flex justify-between items-center">
+            <span class="font-medium text-indigo-800">#67890</span>
+            <span class="text-yellow-500 font-medium">Pending</span>
+          </li>
+          <li class="py-3 flex justify-between items-center">
+            <span class="font-medium text-indigo-800">#11223</span>
+            <span class="text-blue-500 font-medium">Shipped</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
+</div>
+

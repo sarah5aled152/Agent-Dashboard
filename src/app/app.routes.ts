@@ -7,13 +7,15 @@ import { ChatComponent } from './features/chat/chat.component';
 import { TicketsPageComponent } from './features/tickets-page/tickets-page.component';
 import { SettingComponent } from './features/settings/setting/setting.component';
 import { LayoutComponent } from './layout/layout/layout.component';
+import { ProfileComponent } from './features/settings/profile/profile.component'; // Added missing import
+import { SecurityComponent } from './features/settings/security/security.component'; // Added missing import
 
 export const routes: Routes = [
-  // Public routes outside layout
+  // Public routes
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-
+  
   // Protected routes inside layout
   {
     path: '',
@@ -31,6 +33,11 @@ export const routes: Routes = [
       {
         path: 'settings',
         component: SettingComponent,
+        children: [
+          { path: '', redirectTo: 'profile', pathMatch: 'full' },
+          { path: 'profile', component: ProfileComponent },
+          { path: 'security', component: SecurityComponent }
+        ]
       },
       {
         path: 'chat',

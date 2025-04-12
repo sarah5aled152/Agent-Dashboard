@@ -1,50 +1,3 @@
-<!-- <div class="container">
-  <mat-card class="login-card">
-    <mat-card-header class="header-fancy">
-      <mat-card-title>Agent Login</mat-card-title>
-      <mat-card-subtitle class="subtitle-fancy">
-        Sign in to your dashboard
-      </mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="error" *ngIf="error">{{ error }}</div>
-
-        <mat-form-field class="full-width">
-          <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" required />
-          <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
-            Email is required
-          </mat-error>
-          <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
-            Invalid email
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field class="full-width">
-          <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" required />
-          <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-            Password is required
-          </mat-error>
-          <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
-            Password too short
-          </mat-error>
-        </mat-form-field>
-
-        <button color="primary" type="submit" class="full-width login" [disabled]="loading || loginForm.invalid">
-          <mat-spinner diameter="24" *ngIf="loading"></mat-spinner>
-          <span *ngIf="!loading">Login</span>
-        </button>
-
-        <p class="link-text">
-          Don't have an account? <a routerLink="/register">Register now</a>
-        </p>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div> -->
-
 <div class="flex items-center justify-center min-h-screen bg-gray-100">
   <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-lg">
     <h2 class="text-2xl font-bold text-center text-gray-800">Agent Login</h2>
@@ -153,7 +106,7 @@
 
       <!-- Link to Register -->
       <p class="mt-4 text-center text-sm text-gray-600">
-        Don’t have an account?
+        Don't have an account?
         <a routerLink="/register" class="text-blue-600 hover:underline"
           >Register now</a
         >
