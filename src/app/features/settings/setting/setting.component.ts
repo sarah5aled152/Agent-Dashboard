@@ -5,6 +5,7 @@ import { SecurityComponent } from '../security/security.component';
 import { AgentSidebarComponent } from '../../sidebar/agent-sidebar/agent-sidebar.component';
 import { EditProfileComponent } from '../edit-profile/edit-profile.component';
 
+
 @Component({
   selector: 'app-setting',
   imports: [
@@ -13,6 +14,7 @@ import { EditProfileComponent } from '../edit-profile/edit-profile.component';
     SecurityComponent,
     AgentSidebarComponent,
     EditProfileComponent,
+
   ],
   templateUrl: './setting.component.html',
   styleUrl: './setting.component.css',
